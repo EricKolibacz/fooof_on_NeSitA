@@ -11,7 +11,7 @@ for block_name_i = 10:13%length(block_names)
     block_data = eeg_blocks.(block_names{block_name_i}).data;
     
     %moving window
-    block_result = analysis_with_fooof_and_moving_window(block_data, srate, 10000, 1000);
+    block_result = analysis_with_fooof_and_moving_window(block_data, srate, 30000, 1000);
     block_names{block_name_i}
     block_results.(block_names{block_name_i}) = block_result;
 end
@@ -26,7 +26,7 @@ for block_name_i = 10:13%length(block_names)
     aperiodic_parameters = vertcat(block_results.(block_name).aperiodic_params)
     plot(aperiodic_parameters(:,1), 'DisplayName', block_name);
     
-hold on
+    hold on
     title('Aperiodic offset')
 end
 legend;
