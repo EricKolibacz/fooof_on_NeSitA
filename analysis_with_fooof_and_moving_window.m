@@ -47,9 +47,10 @@ function results = analysis_with_fooof_and_moving_window(data, srate, window_siz
     window_steps = p.Results.window_steps; % step size in ms
     window_index_steps = floor(srate*window_steps/1000); % step size in # data points
     
+    results = struct;
+    
     if length(data) < window_index_size
         warning(['Window size (' num2str(window_size) 'ms) larger than the data (' num2str(length(data)/srate*1000) 'ms). Skipping block...'])
-        results = ([]);
     else
         for data_i = 1:window_index_steps:length(data)
             if data_i+window_index_size > length(data)
@@ -68,7 +69,7 @@ function results = analysis_with_fooof_and_moving_window(data, srate, window_siz
             % Run FOOOF
             fooof_results = fooof(freqs, psd, f_range, settings);
 
-            results(floor(data_i/window_index_steps)+1) = fooof_results;
+            results.(['window_' num2str(floor(data_i/window_index_steps)+1)]) = fooof_results;
         end
     end
 end
