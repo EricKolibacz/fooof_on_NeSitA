@@ -43,15 +43,13 @@ function results = analysis_with_fooof_and_moving_window(data, srate, window_siz
     data = p.Results.data;
     srate = p.Results.srate;
     window_size = p.Results.window_size;
-    window_steps = p.Results.window_steps;   
-    if length(data) < window_size
-        warning('Window size larger than available amount of data. Skipping ...')
+    window_index_size = srate*window_size/1000;
+    window_steps = p.Results.window_steps; 
+    
+    if length(data) < window_index_size
+        warning(['Window size (' num2str(window_size) 'ms) larger than the data (' num2str(length(data)/srate*1000) 'ms). Skipping block...'])
         results = ([]);
     else
-        window_index_size = srate*window_size/1000;
-
-        % results = struct([]);% zeros(floor(length(data)/window_steps)+1,1);
-
         for data_i = 1:window_steps:length(data)
             if data_i+window_index_size > length(data)
                continue 
