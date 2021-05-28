@@ -64,7 +64,7 @@ function results = analysis_with_fooof_and_moving_window(data, srate, window_siz
 
             % FOOOF settings
             settings = struct();  % Use defaults
-            f_range = [1, 55];
+            f_range = [1, 55]; %ToDo with parameters maybe?
 
             % Run FOOOF
             fooof_results = fooof(freqs, psd, f_range, settings);
