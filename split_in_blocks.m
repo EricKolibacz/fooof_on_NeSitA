@@ -33,7 +33,7 @@ function eeg_blocks = split_in_blocks(EEG, varargin)
     string_requirements = @(x) (isa(x, 'string')) && ~isempty(x);
         
     addRequired(p, 'EEG', dataRequirements);
-    addOptional(p, 'channels', [85,87,89,90] ,channel_requirements);
+    addRequired(p, 'channels',channel_requirements);
     addOptional(p, 'identifier_start', 'startSpawning' ,string_requirements);
     addOptional(p, 'identifier_end', 'stopSpawning' ,string_requirements);
     
