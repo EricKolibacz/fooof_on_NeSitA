@@ -1,9 +1,15 @@
 %% Reading data
 person = 's6';
 if ~ exist("eeg_blocks", 'var')
-    eeg_blocks = load(['/home/eric/Documents/Uni/Master Human Factors/Thesis/Code/data/' person '/blocks.mat']);
+    extracted_data = load(['/home/eric/Documents/Uni/Master Human Factors/Thesis/Code/data/' person '/blocks.mat']);
 end
-load(['/home/eric/Documents/Uni/Master Human Factors/Thesis/Code/data/' person '/srate.mat']);
+
+eeg_blocks = extracted_data.eeg_blocks;
+srate = extracted_data.srate;
+channels = extracted_data.channels;
+
+
+%% Analysing data
 block_names = fieldnames(eeg_blocks);
 
 aperiodic_offsets = zeros(length(block_names),1);
@@ -11,7 +17,7 @@ for block_name_i = 10:13%length(block_names)
     block_data = eeg_blocks.(block_names{block_name_i}).data;
     
     %moving window
-    block_result = analysis_with_fooof_and_moving_window(block_data, srate, 30000, 4000);
+    block_result = analysis_with_fooof_and_moving_window(block_data, channels, srate, 30000, 4000);
     block_names{block_name_i}
     block_results.(block_names{block_name_i}) = block_result;
 end
