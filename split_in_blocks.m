@@ -15,7 +15,7 @@
 %           
 % This function is free for any kind of distribution and usage!
 % ----------------
-function eeg_blocks = split_in_blocks(EEG)
+function eeg_blocks = split_in_blocks(EEG, varargin)
 
     % check if inputs are given and display the help otherwise
     % input check: if no arguments are entered, print the help and stop
@@ -24,9 +24,23 @@ function eeg_blocks = split_in_blocks(EEG)
         return
     end
     
-    % final variables
-    identifier_start = 'startSpawning';
-    identifier_end = 'stopSpawnin';
+    % input parsing settings
+    p = inputParser;
+    p.CaseSensitive = false;
+    
+    dataRequirements = @(x) (isa(x, 'struct')) && ~isempty(x);
+    string_requirements = @(x) (isa(x, 'string')) && ~isempty(x);
+        
+    addRequired(p, 'EEG', dataRequirements);
+    addOptional(p, 'identifier_start', 'startSpawning' ,string_requirements);
+    addOptional(p, 'identifier_end', 'stopSpawning' ,string_requirements);
+    
+    % parse the input
+    parse(p, EEG, varargin{:});
+    
+    EEG = p.Results.EEG;
+    identifier_start = p.Results.identifier_start;
+    identifier_end = p.Results.identifier_end;
     
     % computation
     allevents = {EEG.event.type}';
