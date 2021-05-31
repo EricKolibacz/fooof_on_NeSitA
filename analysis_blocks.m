@@ -1,7 +1,7 @@
 %% Parameters
 person = 's6';
 window_size = 30000;
-window_steps = 4000;
+window_step = 4000;
 
 %% Reading data
 if ~ exist("eeg_blocks", 'var')
@@ -17,7 +17,7 @@ channels = extracted_data.channels;
 block_names = fieldnames(eeg_blocks);
 
 aperiodic_offsets = zeros(length(block_names),1);
-for block_name_i = 13:13% (block_names)
+for block_name_i = 13:14% (block_names)
     block_data = eeg_blocks.(block_names{block_name_i});
     
     %moving window
@@ -30,7 +30,7 @@ end
 
 %% Plotting aperiodic parameters
 figure(1);
-for block_name_i = 13:13%length(block_names)
+for block_name_i = 13:14%length(block_names)
     block_name = block_names{block_name_i};
     if isempty(block_results.(block_name))
        continue 
