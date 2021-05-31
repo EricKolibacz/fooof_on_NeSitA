@@ -23,18 +23,21 @@ for block_name_i = 10:13%length(block_names)
 end
 
 %% Plotting aperiodic parameters
-%ToDo fix plotting
 figure(1);
-for block_name_i = 10:13%length(block_names)
+for block_name_i = 10:10%length(block_names)
     block_name = block_names{block_name_i};
     if isempty(block_results.(block_name))
        continue 
     end
-    all_windows_of_block = struct2cell(block_results.(block_name));
-    aperiodic_parameters = vertcat(all_windows_of_block{:}).aperiodic_params
-    plot(aperiodic_parameters(:,1), 'DisplayName', block_name);
-    
+    for i_channel = 1:length(channels)
+        channel = ['channel_' num2str(channels(i_channel))];
+        all_windows_of_block = struct2cell(block_results.(block_name));
+        aperiodic_parameters = vertcat(vertcat(vertcat(all_windows_of_block{:}).(channel)).aperiodic_params);
+        
+        subplot(2,2,i_channel);
+        plot(aperiodic_parameters(:,1), 'DisplayName', block_name);
+        title(['Aperiodic offset for channel ' num2str(channels(i_channel))])
+    end
     hold on
-    title('Aperiodic offset')
 end
-legend;
+%legend;
