@@ -29,9 +29,11 @@ function eeg_blocks = split_in_blocks(EEG, varargin)
     p.CaseSensitive = false;
     
     dataRequirements = @(x) (isa(x, 'struct')) && ~isempty(x);
+    channel_requirements = @(x) (isa(x, 'double')) && ~isempty(x);
     string_requirements = @(x) (isa(x, 'string')) && ~isempty(x);
         
     addRequired(p, 'EEG', dataRequirements);
+    addOptional(p, 'channels', [85,87,89,90] ,channel_requirements);
     addOptional(p, 'identifier_start', 'startSpawning' ,string_requirements);
     addOptional(p, 'identifier_end', 'stopSpawning' ,string_requirements);
     
@@ -41,6 +43,7 @@ function eeg_blocks = split_in_blocks(EEG, varargin)
     EEG = p.Results.EEG;
     identifier_start = p.Results.identifier_start;
     identifier_end = p.Results.identifier_end;
+    channels = p.Results.channels;
     
     % computation
     allevents = {EEG.event.type}';
@@ -65,7 +68,7 @@ function eeg_blocks = split_in_blocks(EEG, varargin)
         block_name = blocks{block_i};
         block_start = floor(EEG.event(idx_startevents(block_i)).latency);
         block_stop = floor(EEG.event(idx_stopevents(block_i)).latency);
-        block.data = EEG.data(block_start:block_stop);
+        block.data = EEG.data(channels, block_start:block_stop);
         block.events = EEG.event(idx_startevents(block_i):idx_stopevents(block_i));
         eeg_blocks.(strrep(block_name, '-', '_')) = block;
     end
