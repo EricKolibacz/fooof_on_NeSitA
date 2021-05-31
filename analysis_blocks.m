@@ -23,6 +23,7 @@ for block_name_i = 10:13%length(block_names)
 end
 
 %% Plotting aperiodic parameters
+%ToDo fix plotting
 figure(1);
 for block_name_i = 10:13%length(block_names)
     block_name = block_names{block_name_i};
