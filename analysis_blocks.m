@@ -5,7 +5,7 @@ window_step = 4000;
 
 %% Reading data
 if ~ exist("eeg_blocks", 'var')
-    extracted_data = load(['/home/eric/Documents/Uni/Master Human Factors/Thesis/Code/data/' person '/blocks.mat']);
+    extracted_data = load(['/home/eric/Documents/Uni/Master Human Factors/Thesis/Code/data/' person '/extracted_data.mat']);
 end
 
 eeg_blocks = extracted_data.eeg_blocks;
@@ -30,7 +30,7 @@ end
 
 %% Plotting aperiodic parameters
 figure(1);
-for block_name_i = 13:14%length(block_names)
+for block_name_i = 13:13%length(block_names)
     block_name = block_names{block_name_i};
     if isempty(block_results.(block_name))
        continue 
@@ -42,7 +42,7 @@ for block_name_i = 13:14%length(block_names)
         performance = (vertcat(vertcat(all_windows_of_block{:}).hits) + vertcat(vertcat(all_windows_of_block{:}).CRs)) ./ ...
         (vertcat(vertcat(all_windows_of_block{:}).hits) + vertcat(vertcat(all_windows_of_block{:}).CRs) + vertcat(vertcat(all_windows_of_block{:}).misses) + vertcat(vertcat(all_windows_of_block{:}).FAs));
         time = 0:size(all_windows_of_block,1)-1;
-        time = time' * window_steps/1000;
+        time = time' * window_step/1000;
         
         subplot(2,2,i_channel);
         hold on
@@ -51,6 +51,7 @@ for block_name_i = 13:14%length(block_names)
         % ylim([0 5])
         yyaxis right
         plot(time, performance, 'DisplayName', block_name);
+        ylabel('Offset')
         ylim([0 1])
         title(['Aperiodic offset for channel ' num2str(channels(i_channel))])
         ylabel('Performance')
