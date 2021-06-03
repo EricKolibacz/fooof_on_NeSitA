@@ -2,6 +2,7 @@
 parent_folder = '/home/eric/Documents/Uni/Master Human Factors/Thesis/Code/data/';
 window_size = 60000;
 step_size = 1000;
+max_shift_time = 30000; % longest time reasonable for shifting when computing cross correlation
 
 %% Reading data
 persons=get_files(parent_folder, 'just_folders', true);
@@ -89,8 +90,7 @@ for block_name_i = 9:9%length(block_names)
         performance = (vertcat(vertcat(all_windows_of_block{:}).hits) + vertcat(vertcat(all_windows_of_block{:}).CRs)) ./ ...
         (vertcat(vertcat(all_windows_of_block{:}).hits) + vertcat(vertcat(all_windows_of_block{:}).CRs) + vertcat(vertcat(all_windows_of_block{:}).misses) + vertcat(vertcat(all_windows_of_block{:}).FAs));
         
-        max_shift = 30000/step_size;
-        [ns, Rs, ps] = cross_correlation(performance, aperiodic_parameters(:,2), max_shift);
+        [ns, Rs, ps] = cross_correlation(performance, aperiodic_parameters(:,2), max_shift_time/step_size);
     end
 end
 
