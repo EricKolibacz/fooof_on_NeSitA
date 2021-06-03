@@ -81,7 +81,6 @@ toc
 relevant_blocks_idx = 8:23;
 all_Rs = zeros(length(relevant_blocks_idx), length(channels), max_shift_time/step_size*2+1);
 all_ps = zeros(length(relevant_blocks_idx), length(channels), max_shift_time/step_size*2+1);
-count = 0;
 for block_name_i = relevant_blocks_idx
     block_name = block_names{block_name_i};
     if isempty(block_results.(block_name))
@@ -100,7 +99,6 @@ for block_name_i = relevant_blocks_idx
         aperiodic_parameters(r_squared > 0.7,:) = nan;
     
         [ns, Rs, ps] = cross_correlation(performance, aperiodic_parameters(:,2), max_shift_time/step_size);
-        count = count + 1;
         all_Rs(block_name_i-relevant_blocks_idx(1)+1,i_channel,:) = Rs;
         all_ps(block_name_i-relevant_blocks_idx(1)+1,i_channel,:) = ps;
     end
