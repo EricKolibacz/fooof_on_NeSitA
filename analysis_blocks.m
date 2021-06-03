@@ -1,9 +1,10 @@
 %% Parameters
+parent_folder = '/home/eric/Documents/Uni/Master Human Factors/Thesis/Code/data/';
 window_size = 80000;
 step_size = 60000;
 
 %% Reading data
-files = dir('/home/eric/Documents/Uni/Master Human Factors/Thesis/Code/data/');
+files = dir(parent_folder);
 dirFlags = [files.isdir];
 subFolders = files(dirFlags);
 persons=setdiff({subFolders.name},{'.','..'})'; 
@@ -16,7 +17,7 @@ if tf == 0
    error('A person needs to be selected') 
 end
 person = persons{indx};
-files = dir(['/home/eric/Documents/Uni/Master Human Factors/Thesis/Code/data/'  person]);
+files = dir([parent_folder  person]);
 dirFlags = [files.isdir];
 just_files = files(~dirFlags);
 data_files=just_files(contains({just_files.name}, 'extracted_data'))'; 
@@ -36,7 +37,7 @@ else
 end
 
 if ~ exist("eeg_blocks", 'var')
-    extracted_data = load(['/home/eric/Documents/Uni/Master Human Factors/Thesis/Code/data/' person '/' data_file]);
+    extracted_data = load([parent_folder person '/' data_file]);
 end
 
 eeg_blocks = extracted_data.eeg_blocks;
@@ -47,19 +48,19 @@ channels = extracted_data.channels;
 %% Analysing data
 tic
 clear block_results;
-files = dir(['/home/eric/Documents/Uni/Master Human Factors/Thesis/Code/data/' person]);
+files = dir([parent_folder person]);
 dirFlags = [files.isdir];
 subFolders = files(dirFlags);
 data_folders=setdiff({subFolders.name},{'.','..'})';
 data_folder = data_folders(contains(data_folders,strjoin(arrayfun(@num2str, channels, 'Uniform', false),'_')));
 if ~isempty(data_folder)
-    files = dir(['/home/eric/Documents/Uni/Master Human Factors/Thesis/Code/data/' person '/' data_folder{1}]);
+    files = dir([parent_folder person '/' data_folder{1}]);
     dirFlags = [files.isdir];
     subFolders = files(dirFlags);
     data_subfolders=setdiff({subFolders.name},{'.','..'})';
     data_subfolder = data_subfolders(contains(data_subfolders,['w' num2str(window_size) '_s' num2str(step_size)]));
     if ~isempty(data_subfolder)
-        block_results = load(['/home/eric/Documents/Uni/Master Human Factors/Thesis/Code/data/' person '/' data_folder{1} '/' data_subfolder{1} '/block_results.mat']);
+        block_results = load([parent_folder person '/' data_folder{1} '/' data_subfolder{1} '/block_results.mat']);
     end
 end
 
@@ -75,7 +76,7 @@ if ~exist('block_results', 'var')
         block_names{block_name_i}
         block_results.(block_names{block_name_i}) = block_result;
     end
-    filepath = ['/home/eric/Documents/Uni/Master Human Factors/Thesis/Code/data/' person '/channels_' strjoin(arrayfun(@num2str, channels, 'Uniform', false),'_') '/' 'w' num2str(window_size) '_s' num2str(step_size)];
+    filepath = [parent_folder person '/channels_' strjoin(arrayfun(@num2str, channels, 'Uniform', false),'_') '/' 'w' num2str(window_size) '_s' num2str(step_size)];
     mkdir(filepath)
     save([filepath '/block_results.mat'],'-struct', 'block_results')
     save([filepath '/window_size.mat'], 'window_size')
