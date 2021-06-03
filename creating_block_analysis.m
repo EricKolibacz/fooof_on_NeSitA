@@ -1,5 +1,4 @@
 %% Parameters
-person = 's6';
 parent_folder = '/home/eric/Documents/Uni/Master Human Factors/Thesis/Code/data/';
 window_sizes = [10000,20000,30000,60000];
 step_sizes = [1000,2000,4000];
