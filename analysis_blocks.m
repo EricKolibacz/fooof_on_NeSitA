@@ -56,9 +56,8 @@ if ~isempty(data_folder)
         block_results = load([parent_folder person '/' data_folder{1} '/' data_subfolder{1} '/block_results.mat']);
     end
 end
-
+block_names = fieldnames(eeg_blocks);
 if ~exist('block_results', 'var')
-    block_names = fieldnames(eeg_blocks);
 
     aperiodic_offsets = zeros(length(block_names),1);
     for block_name_i = 1:length(block_names)
@@ -78,7 +77,20 @@ end
 
 toc
 %% Covariance analysis
-
+% for block_name_i = 9:9%length(block_names)
+%     block_name = block_names{block_name_i};
+%     if isempty(block_results.(block_name))
+%        continue 
+%     end
+%     for i_channel = 1:1%length(channels)
+%         channel = ['channel_' num2str(channels(i_channel))];
+%         all_windows_of_block = struct2cell(block_results.(block_name));
+%         aperiodic_parameters = vertcat(vertcat(vertcat(all_windows_of_block{:}).(channel)).aperiodic_params);
+%         performance = (vertcat(vertcat(all_windows_of_block{:}).hits) + vertcat(vertcat(all_windows_of_block{:}).CRs)) ./ ...
+%         (vertcat(vertcat(all_windows_of_block{:}).hits) + vertcat(vertcat(all_windows_of_block{:}).CRs) + vertcat(vertcat(all_windows_of_block{:}).misses) + vertcat(vertcat(all_windows_of_block{:}).FAs));
+%         
+%     end
+% end
 
 %% Plotting aperiodic parameters
 figure(1);
