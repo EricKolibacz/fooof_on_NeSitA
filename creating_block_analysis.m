@@ -31,8 +31,12 @@ else
    data_file = data_files; 
 end
 
-if ~ exist("eeg_blocks", 'var')
-    extracted_data = load([parent_folder person '/' data_file]);
+
+data_file_splitted = split(data_file{1}, '.');
+data_file_splitted = split(data_file_splitted{1},'_');
+if ~ exist("eeg_blocks", 'var') || ~isequal(channels, str2double(data_file_splitted(find(strcmp(data_file_splitted,'channels'))+1:end))')
+    disp('Reading data...')
+    extracted_data = load([parent_folder person '/' data_file{1}]);
 end
 
 eeg_blocks = extracted_data.eeg_blocks;
