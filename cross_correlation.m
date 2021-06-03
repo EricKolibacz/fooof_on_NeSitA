@@ -55,20 +55,20 @@ function [ns, Rs, ps] = cross_correlation(x, y, varargin)
     
     % negative shift
     for shift = -max_shift:1:-1
-        [R,p] = corr(x(1:end+shift),y(1-shift:end));
+        [R,p] = corr(x(1:end+shift),y(1-shift:end), 'rows', 'complete');
         ns((vector_length+1)/2+shift) = shift;
         Rs((vector_length+1)/2+shift) = R;
         ps((vector_length+1)/2+shift) = p;
     end
 
-    [R,p] = corr(x,y);
+    [R,p] = corr(x,y, 'rows', 'complete');
     ns((vector_length+1)/2) = 0;
     Rs((vector_length+1)/2) = R;
     ps((vector_length+1)/2) = p;
     
     % positive shift
     for shift = 1:1:max_shift
-        [R,p] = corr(x(1+shift:end),y(1:end-shift));
+        [R,p] = corr(x(1+shift:end),y(1:end-shift), 'rows', 'complete');
         ns((vector_length+1)/2+shift) = shift;
         Rs((vector_length+1)/2+shift) = R;
         ps((vector_length+1)/2+shift) = p;

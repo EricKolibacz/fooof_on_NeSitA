@@ -78,24 +78,48 @@ end
 
 toc
 %% Covariance analysis
-for block_name_i = 9:9%length(block_names)
+relevant_blocks_idx = 8:23;
+all_Rs = zeros(length(relevant_blocks_idx), length(channels), max_shift_time/step_size*2+1);
+all_ps = zeros(length(relevant_blocks_idx), length(channels), max_shift_time/step_size*2+1);
+count = 0;
+for block_name_i = relevant_blocks_idx
     block_name = block_names{block_name_i};
     if isempty(block_results.(block_name))
        continue 
     end
-    for i_channel = 1:2%length(channels)
+    for i_channel = 1:length(channels)
         channel = ['channel_' num2str(channels(i_channel))];
         all_windows_of_block = struct2cell(block_results.(block_name));
         aperiodic_parameters = vertcat(vertcat(vertcat(all_windows_of_block{:}).(channel)).aperiodic_params);
         performance = (vertcat(vertcat(all_windows_of_block{:}).hits) + vertcat(vertcat(all_windows_of_block{:}).CRs)) ./ ...
         (vertcat(vertcat(all_windows_of_block{:}).hits) + vertcat(vertcat(all_windows_of_block{:}).CRs) + vertcat(vertcat(all_windows_of_block{:}).misses) + vertcat(vertcat(all_windows_of_block{:}).FAs));
         
+        error = vertcat(vertcat(vertcat(all_windows_of_block{:}).(channel)).error);
+        r_squared = vertcat(vertcat(vertcat(all_windows_of_block{:}).(channel)).r_squared);
+        
+        aperiodic_parameters(r_squared > 0.7,:) = nan;
+    
         [ns, Rs, ps] = cross_correlation(performance, aperiodic_parameters(:,2), max_shift_time/step_size);
+        count = count + 1;
+        all_Rs(block_name_i-relevant_blocks_idx(1)+1,i_channel,:) = Rs;
+        all_ps(block_name_i-relevant_blocks_idx(1)+1,i_channel,:) = ps;
     end
 end
-
-%% Plotting aperiodic parameters
 figure(1);
+clf;
+subplot(2,1,1)
+plot(ns,permute(nanmean(all_Rs,1),[3,2,1]))
+xlabel('Shift')
+ylabel('mean of R over Blocks')
+legend(split(num2str(channels)))
+subplot(2,1,2)
+plot(ns,permute(nanmean(all_ps,1),[3,2,1]))
+xlabel('Shift')
+ylabel('mean of p over Blocks')
+legend(split(num2str(channels)))
+%% Plotting aperiodic parameters
+figure(2);
+clf;
 for block_name_i = 9:9%length(block_names)
     block_name = block_names{block_name_i};
     if isempty(block_results.(block_name))
@@ -110,17 +134,25 @@ for block_name_i = 9:9%length(block_names)
         time = 0:size(all_windows_of_block,1)-1;
         time = time' * step_size/1000;
         
+        error = vertcat(vertcat(vertcat(all_windows_of_block{:}).(channel)).error);
+        r_squared = vertcat(vertcat(vertcat(all_windows_of_block{:}).(channel)).r_squared);
+        
+        aperiodic_parameters(r_squared > 0.7,:) = nan;
+        %interpolation for plotting
+        %X = ~isnan(aperiodic_parameters);
+        %Y = cumsum(X-diff([1,X])/2);
+        %aperiodic_parameters = interp1(1:nnz(X),V(X),Y);
         subplot(2,2,i_channel);
         hold on
         yyaxis left
-        plot(time, aperiodic_parameters(:,2), 'DisplayName', block_name);
-        % ylim([0 5])
+        plot(time, fillmissing(aperiodic_parameters(:,2),'linear'), 'DisplayName', block_name);
+        ylabel('Aperiodic Exponent')
+        % ylim([1.65 1.7])
         yyaxis right
         plot(time, performance, 'DisplayName', block_name);
-        ylabel('Offset')
+        ylabel('Performance')
         % ylim([0 1])
         title(['Aperiodic offset for channel ' num2str(channels(i_channel))])
-        ylabel('Performance')
         xlabel('Time in s')
     end
 end
