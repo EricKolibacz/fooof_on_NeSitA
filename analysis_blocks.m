@@ -4,10 +4,7 @@ window_size = 80000;
 step_size = 60000;
 
 %% Reading data
-files = dir(parent_folder);
-dirFlags = [files.isdir];
-subFolders = files(dirFlags);
-persons=setdiff({subFolders.name},{'.','..'})'; 
+persons=get_files(parent_folder, 'just_folders', true);
 [indx,tf] = listdlg('PromptString',{'Select a person.',...
     'Only one can be selected at a time.',''},...
     'SelectionMode','single',...
@@ -17,10 +14,8 @@ if tf == 0
    error('A person needs to be selected') 
 end
 person = persons{indx};
-files = dir([parent_folder  person]);
-dirFlags = [files.isdir];
-just_files = files(~dirFlags);
-data_files=just_files(contains({just_files.name}, 'extracted_data'))'; 
+just_files = get_files([parent_folder person], 'just_files', true);
+data_files=just_files(contains(just_files, 'extracted_data'))'; 
 if length(data_files) > 1
     [indx,tf] = listdlg('PromptString',{'Select a file.',...
         'Only one can be selected at a time.',''},...
@@ -31,9 +26,9 @@ if length(data_files) > 1
     if tf == 0
        error('A person needs to be selected') 
     end
-    data_file = data_files(indx).name;
+    data_file = data_files(indx);
 else
-   data_file = data_files.name; 
+   data_file = data_files; 
 end
 
 if ~ exist("eeg_blocks", 'var')
@@ -48,16 +43,10 @@ channels = extracted_data.channels;
 %% Analysing data
 tic
 clear block_results;
-files = dir([parent_folder person]);
-dirFlags = [files.isdir];
-subFolders = files(dirFlags);
-data_folders=setdiff({subFolders.name},{'.','..'})';
+data_folders=get_files([parent_folder person], 'just_folders', true);
 data_folder = data_folders(contains(data_folders,strjoin(arrayfun(@num2str, channels, 'Uniform', false),'_')));
 if ~isempty(data_folder)
-    files = dir([parent_folder person '/' data_folder{1}]);
-    dirFlags = [files.isdir];
-    subFolders = files(dirFlags);
-    data_subfolders=setdiff({subFolders.name},{'.','..'})';
+    data_subfolders=get_files([parent_folder person '/' data_folder{1}], 'just_folder', true);
     data_subfolder = data_subfolders(contains(data_subfolders,['w' num2str(window_size) '_s' num2str(step_size)]));
     if ~isempty(data_subfolder)
         block_results = load([parent_folder person '/' data_folder{1} '/' data_subfolder{1} '/block_results.mat']);
