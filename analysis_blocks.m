@@ -78,6 +78,8 @@ if ~exist('block_results', 'var')
     filepath = ['/home/eric/Documents/Uni/Master Human Factors/Thesis/Code/data/' person '/channels_' strjoin(arrayfun(@num2str, channels, 'Uniform', false),'_') '/' 'w' num2str(window_size) '_s' num2str(step_size)];
     mkdir(filepath)
     save([filepath '/block_results.mat'],'-struct', 'block_results')
+    save([filepath '/window_size.mat'], 'window_size')
+    save([filepath '/step_size.mat'], 'step_size')
 end
 
 toc
