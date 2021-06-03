@@ -77,20 +77,22 @@ end
 
 toc
 %% Covariance analysis
-% for block_name_i = 9:9%length(block_names)
-%     block_name = block_names{block_name_i};
-%     if isempty(block_results.(block_name))
-%        continue 
-%     end
-%     for i_channel = 1:1%length(channels)
-%         channel = ['channel_' num2str(channels(i_channel))];
-%         all_windows_of_block = struct2cell(block_results.(block_name));
-%         aperiodic_parameters = vertcat(vertcat(vertcat(all_windows_of_block{:}).(channel)).aperiodic_params);
-%         performance = (vertcat(vertcat(all_windows_of_block{:}).hits) + vertcat(vertcat(all_windows_of_block{:}).CRs)) ./ ...
-%         (vertcat(vertcat(all_windows_of_block{:}).hits) + vertcat(vertcat(all_windows_of_block{:}).CRs) + vertcat(vertcat(all_windows_of_block{:}).misses) + vertcat(vertcat(all_windows_of_block{:}).FAs));
-%         
-%     end
-% end
+for block_name_i = 9:9%length(block_names)
+    block_name = block_names{block_name_i};
+    if isempty(block_results.(block_name))
+       continue 
+    end
+    for i_channel = 1:2%length(channels)
+        channel = ['channel_' num2str(channels(i_channel))];
+        all_windows_of_block = struct2cell(block_results.(block_name));
+        aperiodic_parameters = vertcat(vertcat(vertcat(all_windows_of_block{:}).(channel)).aperiodic_params);
+        performance = (vertcat(vertcat(all_windows_of_block{:}).hits) + vertcat(vertcat(all_windows_of_block{:}).CRs)) ./ ...
+        (vertcat(vertcat(all_windows_of_block{:}).hits) + vertcat(vertcat(all_windows_of_block{:}).CRs) + vertcat(vertcat(all_windows_of_block{:}).misses) + vertcat(vertcat(all_windows_of_block{:}).FAs));
+        
+        max_shift = 30000/step_size;
+        [ns, Rs, ps] = cross_correlation(performance, aperiodic_parameters(:,2), max_shift);
+    end
+end
 
 %% Plotting aperiodic parameters
 figure(1);
