@@ -79,8 +79,10 @@ end
 toc
 %% Covariance analysis
 relevant_blocks_idx = 8:23;
-all_Rs = zeros(length(relevant_blocks_idx), length(channels), max_shift_time/step_size*2+1);
-all_ps = zeros(length(relevant_blocks_idx), length(channels), max_shift_time/step_size*2+1);
+Rs_ap_offset = zeros(length(relevant_blocks_idx), length(channels), max_shift_time/step_size*2+1);
+ps_ap_offset = zeros(length(relevant_blocks_idx), length(channels), max_shift_time/step_size*2+1);
+Rs_ap_component = zeros(length(relevant_blocks_idx), length(channels), max_shift_time/step_size*2+1);
+ps_ap_component = zeros(length(relevant_blocks_idx), length(channels), max_shift_time/step_size*2+1);
 for block_name_i = relevant_blocks_idx
     block_name = block_names{block_name_i};
     if isempty(block_results.(block_name))
@@ -98,20 +100,38 @@ for block_name_i = relevant_blocks_idx
         
         aperiodic_parameters(r_squared > 0.7,:) = nan;
     
+        [~, Rs, ps] = cross_correlation(performance, aperiodic_parameters(:,1), max_shift_time/step_size);
+        Rs_ap_offset(block_name_i-relevant_blocks_idx(1)+1,i_channel,:) = Rs;
+        ps_ap_offset(block_name_i-relevant_blocks_idx(1)+1,i_channel,:) = ps;
+        
         [ns, Rs, ps] = cross_correlation(performance, aperiodic_parameters(:,2), max_shift_time/step_size);
-        all_Rs(block_name_i-relevant_blocks_idx(1)+1,i_channel,:) = Rs;
-        all_ps(block_name_i-relevant_blocks_idx(1)+1,i_channel,:) = ps;
+        Rs_ap_component(block_name_i-relevant_blocks_idx(1)+1,i_channel,:) = Rs;
+        ps_ap_component(block_name_i-relevant_blocks_idx(1)+1,i_channel,:) = ps;
     end
 end
 figure(1);
 clf;
-subplot(2,1,1)
-plot(ns,permute(nanmean(all_Rs,1),[3,2,1]))
+subplot(2,2,1)
+plot(ns,permute(nanmean(Rs_ap_component,1),[3,2,1]))
+title('Aperiodic component')
 xlabel('Shift')
 ylabel('mean of R over Blocks')
 legend(split(num2str(channels)))
-subplot(2,1,2)
-plot(ns,permute(nanmean(all_ps,1),[3,2,1]))
+subplot(2,2,3)
+plot(ns,permute(nanmean(ps_ap_component,1),[3,2,1]))
+title('Aperiodic component')
+xlabel('Shift')
+ylabel('mean of p over Blocks')
+legend(split(num2str(channels)))
+subplot(2,2,2)
+plot(ns,permute(nanmean(Rs_ap_offset,1),[3,2,1]))
+title('Aperiodic offset')
+xlabel('Shift')
+ylabel('mean of R over Blocks')
+legend(split(num2str(channels)))
+subplot(2,2,4)
+plot(ns,permute(nanmean(ps_ap_offset,1),[3,2,1]))
+title('Aperiodic offset')
 xlabel('Shift')
 ylabel('mean of p over Blocks')
 legend(split(num2str(channels)))
