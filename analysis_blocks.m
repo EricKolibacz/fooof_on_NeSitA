@@ -10,6 +10,7 @@ persons=get_files(parent_folder, 'just_folders', true);
     'Only one can be selected at a time.',''},...
     'SelectionMode','single',...
     'ListSize',[350,300],...
+    'InitialValue', 2,...
     'ListString',persons);
 if tf == 0
    error('A person needs to be selected') 
@@ -65,8 +66,8 @@ if ~exist('block_results', 'var')
         block_data = eeg_blocks.(block_names{block_name_i});
 
         %moving window
-        block_result = analysis_with_fooof_and_moving_window(block_data, channels, srate, window_size, step_size);
         block_names{block_name_i}
+        block_result = analysis_with_fooof_and_moving_window(block_data, channels, srate, window_size, step_size);
         block_results.(block_names{block_name_i}) = block_result;
     end
     filepath = [parent_folder person '/channels_' strjoin(arrayfun(@num2str, channels, 'Uniform', false),'_') '/' 'w' num2str(window_size) '_s' num2str(step_size)];
@@ -97,8 +98,10 @@ for block_name_i = relevant_blocks_idx
         
         error = vertcat(vertcat(vertcat(all_windows_of_block{:}).(channel)).error);
         r_squared = vertcat(vertcat(vertcat(all_windows_of_block{:}).(channel)).r_squared);
-        
-        aperiodic_parameters(r_squared > 0.7,:) = nan;
+        % median(r_squared)+1.4826 * 3 * mad(r_squared)
+        % median(r_squared)-4.4478*mad(r_squared)
+        aperiodic_parameters(r_squared > median(r_squared)+1.4826 * 3 * mad(r_squared),:) = nan;
+        aperiodic_parameters(r_squared < median(r_squared)-1.4826 * 3 * mad(r_squared),:) = nan;
     
         [~, Rs, ps] = cross_correlation(performance, aperiodic_parameters(:,1), max_shift_time/step_size);
         Rs_ap_offset(block_name_i-relevant_blocks_idx(1)+1,i_channel,:) = Rs;
@@ -107,70 +110,5 @@ for block_name_i = relevant_blocks_idx
         [ns, Rs, ps] = cross_correlation(performance, aperiodic_parameters(:,2), max_shift_time/step_size);
         Rs_ap_component(block_name_i-relevant_blocks_idx(1)+1,i_channel,:) = Rs;
         ps_ap_component(block_name_i-relevant_blocks_idx(1)+1,i_channel,:) = ps;
-    end
-end
-figure(1);
-clf;
-subplot(2,2,1)
-plot(ns,permute(nanmean(Rs_ap_component,1),[3,2,1]))
-title('Aperiodic component')
-xlabel('Shift')
-ylabel('mean of R over Blocks')
-legend(split(num2str(channels)))
-subplot(2,2,3)
-plot(ns,permute(nanmean(ps_ap_component,1),[3,2,1]))
-title('Aperiodic component')
-xlabel('Shift')
-ylabel('mean of p over Blocks')
-legend(split(num2str(channels)))
-subplot(2,2,2)
-plot(ns,permute(nanmean(Rs_ap_offset,1),[3,2,1]))
-title('Aperiodic offset')
-xlabel('Shift')
-ylabel('mean of R over Blocks')
-legend(split(num2str(channels)))
-subplot(2,2,4)
-plot(ns,permute(nanmean(ps_ap_offset,1),[3,2,1]))
-title('Aperiodic offset')
-xlabel('Shift')
-ylabel('mean of p over Blocks')
-legend(split(num2str(channels)))
-%% Plotting aperiodic parameters
-figure(2);
-clf;
-for block_name_i = 9:9%length(block_names)
-    block_name = block_names{block_name_i};
-    if isempty(block_results.(block_name))
-       continue 
-    end
-    for i_channel = 1:length(channels)
-        channel = ['channel_' num2str(channels(i_channel))];
-        all_windows_of_block = struct2cell(block_results.(block_name));
-        aperiodic_parameters = vertcat(vertcat(vertcat(all_windows_of_block{:}).(channel)).aperiodic_params);
-        performance = (vertcat(vertcat(all_windows_of_block{:}).hits) + vertcat(vertcat(all_windows_of_block{:}).CRs)) ./ ...
-        (vertcat(vertcat(all_windows_of_block{:}).hits) + vertcat(vertcat(all_windows_of_block{:}).CRs) + vertcat(vertcat(all_windows_of_block{:}).misses) + vertcat(vertcat(all_windows_of_block{:}).FAs));
-        time = 0:size(all_windows_of_block,1)-1;
-        time = time' * step_size/1000;
-        
-        error = vertcat(vertcat(vertcat(all_windows_of_block{:}).(channel)).error);
-        r_squared = vertcat(vertcat(vertcat(all_windows_of_block{:}).(channel)).r_squared);
-        
-        aperiodic_parameters(r_squared > 0.7,:) = nan;
-        %interpolation for plotting
-        %X = ~isnan(aperiodic_parameters);
-        %Y = cumsum(X-diff([1,X])/2);
-        %aperiodic_parameters = interp1(1:nnz(X),V(X),Y);
-        subplot(2,2,i_channel);
-        hold on
-        yyaxis left
-        plot(time, fillmissing(aperiodic_parameters(:,2),'linear'), 'DisplayName', block_name);
-        ylabel('Aperiodic Exponent')
-        % ylim([1.65 1.7])
-        yyaxis right
-        plot(time, performance, 'DisplayName', block_name);
-        ylabel('Performance')
-        % ylim([0 1])
-        title(['Aperiodic offset for channel ' num2str(channels(i_channel))])
-        xlabel('Time in s')
     end
 end
