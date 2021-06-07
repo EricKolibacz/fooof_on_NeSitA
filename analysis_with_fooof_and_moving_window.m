@@ -77,7 +77,7 @@ function results = analysis_with_fooof_and_moving_window(data, channels, srate, 
                 f_range = [1, 55]; %ToDo with parameters maybe?
 
                 % Run FOOOF
-                [~,fooof_results] = evalc('fooof(freqs, psd, f_range, settings);');
+                [~,fooof_results] = evalc('fooof(freqs, psd, f_range, settings, true);');
 
                 channel = ['channel_' num2str(channels(channel_i))];
                 
