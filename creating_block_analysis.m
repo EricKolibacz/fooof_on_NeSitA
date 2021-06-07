@@ -1,7 +1,7 @@
 %% Parameters
 parent_folder = '/home/eric/Documents/Uni/Master Human Factors/Thesis/Code/data/';
-window_sizes = [10000,20000,30000,60000];
-step_sizes = [1000,2000,4000];
+window_sizes = [30000,20000,60000];
+step_sizes = [1000];
 
 %% Reading data
 persons=get_files(parent_folder, 'just_folders', true);
@@ -9,6 +9,7 @@ persons=get_files(parent_folder, 'just_folders', true);
     'Only one can be selected at a time.',''},...
     'SelectionMode','single',...
     'ListSize',[350,300],...
+    'InitialValue', 2,...
     'ListString',persons);
 if tf == 0
    error('A person needs to be selected') 
