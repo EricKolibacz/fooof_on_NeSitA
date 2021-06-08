@@ -80,10 +80,10 @@ end
 toc
 %% Covariance analysis
 relevant_blocks_idx = 8:23;
-Rs_ap_offset = zeros(length(relevant_blocks_idx), length(channels), max_shift_time/step_size*2+1);
-ps_ap_offset = zeros(length(relevant_blocks_idx), length(channels), max_shift_time/step_size*2+1);
-Rs_ap_component = zeros(length(relevant_blocks_idx), length(channels), max_shift_time/step_size*2+1);
-ps_ap_component = zeros(length(relevant_blocks_idx), length(channels), max_shift_time/step_size*2+1);
+Rs_ap_offset = nan(length(relevant_blocks_idx), length(channels), max_shift_time/step_size*2+1);
+ps_ap_offset = nan(length(relevant_blocks_idx), length(channels), max_shift_time/step_size*2+1);
+Rs_ap_component = nan(length(relevant_blocks_idx), length(channels), max_shift_time/step_size*2+1);
+ps_ap_component = nan(length(relevant_blocks_idx), length(channels), max_shift_time/step_size*2+1);
 for block_name_i = relevant_blocks_idx
     block_name = block_names{block_name_i};
     if isempty(block_results.(block_name))
@@ -95,7 +95,6 @@ for block_name_i = relevant_blocks_idx
         aperiodic_parameters = vertcat(vertcat(vertcat(all_windows_of_block{:}).(channel)).aperiodic_params);
         performance = (vertcat(vertcat(all_windows_of_block{:}).hits) + vertcat(vertcat(all_windows_of_block{:}).CRs)) ./ ...
         (vertcat(vertcat(all_windows_of_block{:}).hits) + vertcat(vertcat(all_windows_of_block{:}).CRs) + vertcat(vertcat(all_windows_of_block{:}).misses) + vertcat(vertcat(all_windows_of_block{:}).FAs));
-        
         error = vertcat(vertcat(vertcat(all_windows_of_block{:}).(channel)).error);
         r_squared = vertcat(vertcat(vertcat(all_windows_of_block{:}).(channel)).r_squared);
         % median(r_squared)+1.4826 * 3 * mad(r_squared)
