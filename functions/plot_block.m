@@ -37,6 +37,7 @@ function plot_block(block, channels, step_size, window_size, varargin)
     addRequired(p, 'step_size', double_requirements);
     addRequired(p, 'window_size', double_requirements);
     addOptional(p, 'parameter', 'component', string_requirements);
+    addOptional(p, 'performance_measure', 'performance', string_requirements);
     
     % parse the input
     parse(p, block, channels, step_size, window_size, varargin{:});
@@ -46,6 +47,7 @@ function plot_block(block, channels, step_size, window_size, varargin)
     step_size = p.Results.step_size;
     window_size = p.Results.window_size;
     parameter = p.Results.parameter;
+    performance_measure = p.Results.performance_measure;
     if strcmp(p.Results.parameter,'component')
         parameter_idx = 1;
     elseif strcmp(p.Results.parameter,'offset')
@@ -59,8 +61,15 @@ function plot_block(block, channels, step_size, window_size, varargin)
         channel = ['channel_' num2str(channels(i_channel))];
         all_windows_of_block = struct2cell(block);
         aperiodic_parameters = vertcat(vertcat(vertcat(all_windows_of_block{:}).(channel)).aperiodic_params);
-        performance = (vertcat(vertcat(all_windows_of_block{:}).hits) + vertcat(vertcat(all_windows_of_block{:}).CRs)) ./ ...
-        (vertcat(vertcat(all_windows_of_block{:}).hits) + vertcat(vertcat(all_windows_of_block{:}).CRs) + vertcat(vertcat(all_windows_of_block{:}).misses) + vertcat(vertcat(all_windows_of_block{:}).FAs));
+        [performance, bias] = get_performance(block);
+        
+        if strcmp(performance_measure, 'performance')
+            comparison_parameter = performance;
+        elseif strcmp(performance_measure,'bias')
+            comparison_parameter = bias;
+        else
+           error(['Mode' mode ' is not known']) 
+        end
         time = 0:size(all_windows_of_block,1)-1;
         time = time' * step_size/1000 + window_size/1000/2;
 
@@ -79,8 +88,8 @@ function plot_block(block, channels, step_size, window_size, varargin)
         %fillmissing(aperiodic_parameters(:,2),'linear'), 'DisplayName', block_name);
         ylabel(['Aperiodic ' parameter])
         yyaxis right
-        plot(time, performance);
-        ylabel('Performance')
+        plot(time, comparison_parameter);
+        ylabel(mlreportgen.utils.capitalizeFirstChar(performance_measure))
         title(['Aperiodic ' parameter ' for channel ' num2str(channels(i_channel))])
         xlabel('Time in s')
         xlim([0 max(time)+window_size/1000/2])
