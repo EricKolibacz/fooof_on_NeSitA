@@ -95,6 +95,11 @@ for block_name_i = relevant_blocks_idx
         aperiodic_parameters = vertcat(vertcat(vertcat(all_windows_of_block{:}).(channel)).aperiodic_params);
         performance = (vertcat(vertcat(all_windows_of_block{:}).hits) + vertcat(vertcat(all_windows_of_block{:}).CRs)) ./ ...
         (vertcat(vertcat(all_windows_of_block{:}).hits) + vertcat(vertcat(all_windows_of_block{:}).CRs) + vertcat(vertcat(all_windows_of_block{:}).misses) + vertcat(vertcat(all_windows_of_block{:}).FAs));
+
+%         if std(performance) < 0.05
+%             continue
+%         end
+    
         error = vertcat(vertcat(vertcat(all_windows_of_block{:}).(channel)).error);
         r_squared = vertcat(vertcat(vertcat(all_windows_of_block{:}).(channel)).r_squared);
         % median(r_squared)+1.4826 * 3 * mad(r_squared)
