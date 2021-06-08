@@ -59,14 +59,15 @@ function results = analysis_with_fooof_and_moving_window(data, channels, srate, 
         warning(['Window size (' num2str(window_size) 'ms) larger than the data (' num2str(length(eeg_data)/srate*1000) 'ms). Skipping block...'])
     else
         for data_i = 1:window_index_steps:size(eeg_data,2)
-            if data_i+window_index_size > size(eeg_data,2)
+            end_window = data_i+window_index_size-1;
+            if end_window > size(eeg_data,2)
                continue 
             end
             window = ['window_' num2str(floor(data_i/window_index_steps)+1)];
             
             % analysing eeg date via fooof
             for channel_i = 1:length(channels)
-                [psd, freqs] = pwelch(eeg_data(channel_i, data_i:data_i+window_index_size), srate, [], [], srate);
+                [psd, freqs] = pwelch(eeg_data(channel_i, data_i:end_window), srate, [], [], srate);
 
                 % Transpose, to make inputs row vectors
                 freqs = freqs';
@@ -86,7 +87,7 @@ function results = analysis_with_fooof_and_moving_window(data, channels, srate, 
             
             % analysing performance
             window_start_time = start_time_index + data_i;
-            window_end_time = start_time_index + data_i + window_index_size;
+            window_end_time = start_time_index + end_window;
             
             window_events = events(1,cell2mat({events.latency}') > window_start_time & cell2mat({events.latency}') < window_end_time);
             window_destruction_events = window_events(contains({window_events.type}','sphereDestruction'));
