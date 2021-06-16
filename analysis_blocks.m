@@ -84,8 +84,8 @@ mode = 'performance';
 relevant_blocks_idx = 8:23;
 Rs_ap_offset = nan(length(relevant_blocks_idx), length(channels), max_shift_time/step_size*2+1);
 ps_ap_offset = nan(length(relevant_blocks_idx), length(channels), max_shift_time/step_size*2+1);
-Rs_ap_component = nan(length(relevant_blocks_idx), length(channels), max_shift_time/step_size*2+1);
-ps_ap_component = nan(length(relevant_blocks_idx), length(channels), max_shift_time/step_size*2+1);
+Rs_ap_exponent = nan(length(relevant_blocks_idx), length(channels), max_shift_time/step_size*2+1);
+ps_ap_exponent = nan(length(relevant_blocks_idx), length(channels), max_shift_time/step_size*2+1);
 for block_name_i = relevant_blocks_idx
     block_name = block_names{block_name_i};
     if isempty(block_results.(block_name))
@@ -120,7 +120,7 @@ for block_name_i = relevant_blocks_idx
         ps_ap_offset(block_name_i-relevant_blocks_idx(1)+1,i_channel,:) = ps;
         
         [ns, Rs, ps] = cross_correlation(comparison_parameter, aperiodic_parameters(:,2), max_shift_time/step_size);
-        Rs_ap_component(block_name_i-relevant_blocks_idx(1)+1,i_channel,:) = Rs;
-        ps_ap_component(block_name_i-relevant_blocks_idx(1)+1,i_channel,:) = ps;
+        Rs_ap_exponent(block_name_i-relevant_blocks_idx(1)+1,i_channel,:) = Rs;
+        ps_ap_exponent(block_name_i-relevant_blocks_idx(1)+1,i_channel,:) = ps;
     end
 end

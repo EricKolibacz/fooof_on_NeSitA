@@ -36,7 +36,7 @@ function plot_block(block, channels, step_size, window_size, varargin)
     addRequired(p, 'channels', double_requirements);
     addRequired(p, 'step_size', double_requirements);
     addRequired(p, 'window_size', double_requirements);
-    addOptional(p, 'parameter', 'component', string_requirements);
+    addOptional(p, 'parameter', 'exponent', string_requirements);
     addOptional(p, 'performance_measure', 'performance', string_requirements);
     
     % parse the input
@@ -48,7 +48,7 @@ function plot_block(block, channels, step_size, window_size, varargin)
     window_size = p.Results.window_size;
     parameter = p.Results.parameter;
     performance_measure = p.Results.performance_measure;
-    if strcmp(p.Results.parameter,'component')
+    if strcmp(p.Results.parameter,'exponent')
         parameter_idx = 1;
     elseif strcmp(p.Results.parameter,'offset')
         parameter_idx = 2;
