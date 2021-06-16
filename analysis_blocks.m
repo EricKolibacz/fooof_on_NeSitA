@@ -80,7 +80,7 @@ end
 toc
 %% Covariance analysis
 
-mode = 'bias';
+mode = 'performance';
 relevant_blocks_idx = 8:23;
 Rs_ap_offset = nan(length(relevant_blocks_idx), length(channels), max_shift_time/step_size*2+1);
 ps_ap_offset = nan(length(relevant_blocks_idx), length(channels), max_shift_time/step_size*2+1);
