@@ -44,11 +44,11 @@ function T = create_table_for_lm(all_windows_of_block, channels, shift)
     
     % computation
     if shift < 0
-        windows_component = all_windows_of_block(1-shift:end);
-        windows_performance = all_windows_of_block(1:end+shift);
+        windows_component = all_windows_of_block(1:end+shift);
+        windows_performance = all_windows_of_block(1-shift:end);
     elseif shift > 0
-        windows_component = all_windows_of_block(1:end-shift);
-        windows_performance = all_windows_of_block(1+shift:end);  
+        windows_component = all_windows_of_block(1+shift:end);
+        windows_performance = all_windows_of_block(1:end-shift);  
     else
         windows_component = all_windows_of_block;
         windows_performance = all_windows_of_block;
