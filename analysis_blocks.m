@@ -95,7 +95,7 @@ for block_name_i = relevant_blocks_idx
         channel = ['channel_' num2str(channels(i_channel))];
         all_windows_of_block = struct2cell(block_results.(block_name));
         aperiodic_parameters = vertcat(vertcat(vertcat(all_windows_of_block{:}).(channel)).aperiodic_params);
-        [performance, bias] = get_performance(block_results.(block_name));
+        [performance, bias] = get_performance(all_windows_of_block);
         
         if strcmp(mode, 'performance')
             comparison_parameter = performance;

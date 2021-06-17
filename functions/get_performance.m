@@ -15,11 +15,11 @@
 %           
 % This function is free for any kind of distribution and usage!
 % ----------------
-function [performance, bias] = get_performance(block_results)
+function [performance, bias] = get_performance(all_windows_of_block)
 
     % check if inputs are given and display the help otherwise
     % input check: if no arguments are entered, print the help and stop
-    if nargin < 0
+    if nargin < 1
         help get_performance
         return
     end
@@ -28,17 +28,16 @@ function [performance, bias] = get_performance(block_results)
     p = inputParser;
     p.CaseSensitive = false;
     
-    struct_requirements= @(x) (isa(x, 'struct')) && ~isempty(x);
+    cell_requirements= @(x) (isa(x, 'cell')) && ~isempty(x);
         
-    addRequired(p, 'block_results', struct_requirements);
+    addRequired(p, 'all_windows_of_block', cell_requirements);
     
     % parse the input
-    parse(p, block_results);
+    parse(p, all_windows_of_block);
     
-    block_results = p.Results.block_results;
+    all_windows_of_block = p.Results.all_windows_of_block;
     
     % computation
-    all_windows_of_block = struct2cell(block_results);
     hits = vertcat(vertcat(all_windows_of_block{:}).hits);
     CRs = vertcat(vertcat(all_windows_of_block{:}).CRs);
     misses = vertcat(vertcat(all_windows_of_block{:}).misses);
