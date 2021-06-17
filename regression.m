@@ -1,28 +1,32 @@
-%% Create Table
-T = table();
-for block_name_i = relevant_blocks_idx
-    block_name = block_names{block_name_i};
-    all_windows_of_block = struct2cell(block_results.(block_name));
-    parameters = vertcat(vertcat(vertcat(all_windows_of_block{:}).channel_85).aperiodic_params);
-    c85_offset = parameters(:,1);
-    c85_exponent = parameters(:,2);
-    parameters = vertcat(vertcat(vertcat(all_windows_of_block{:}).channel_87).aperiodic_params);
-    c87_offset = parameters(:,1);
-    c87_exponent = parameters(:,2);
-    parameters = vertcat(vertcat(vertcat(all_windows_of_block{:}).channel_89).aperiodic_params);
-    c89_offset = parameters(:,1);
-    c89_exponent = parameters(:,2);
-    parameters = vertcat(vertcat(vertcat(all_windows_of_block{:}).channel_90).aperiodic_params);
-    c90_offset = parameters(:,1);
-    c90_exponent = parameters(:,2);
-    performance = get_performance(block_results.(block_name));
+max_shift = max_shift_time/step_size;
 
-    T_block = table(c85_offset, c85_exponent, c87_offset, c87_exponent, c89_offset, c89_exponent, c90_offset, c90_exponent, performance);
-    T = [T;T_block];
+% computation
+linear_models = struct;
+
+for shift = -max_shift:1:max_shift
+    T_shift = table();
+    for block_name_i = relevant_blocks_idx
+        block_name = block_names{block_name_i};
+        all_windows_of_block = struct2cell(block_results.(block_name));
+        T_block = create_table_for_lm(all_windows_of_block, channels, shift);
+        T_shift = [T_shift;T_block];
+    end
+    for i_channel = 1:length(channels)
+        T_shift.Properties.VariableNames{['offsets' num2str(i_channel)]} = ['c' num2str(channels(i_channel)) '_offset'];
+        T_shift.Properties.VariableNames{['exponents' num2str(i_channel)]} = ['c' num2str(channels(i_channel)) '_exponent'];
+    end
+    linear_models.(strrep(['shift' num2str(shift)], '-', 'negative')) = fitlm(T_shift);
 end
 
-%% Linear Regression
-fitlm(T)
+%% Comparison
 
 
-
+linear_models_cell = struct2cell(linear_models);
+r_squared_adjusted = nan(length(linear_models_cell),1);
+for linear_model_i = 1:length(linear_models_cell)
+    r_squared_adjusted(linear_model_i,1) = linear_models_cell{linear_model_i}.Rsquared.Adjusted;
+end
+time = -max_shift_time:step_size:max_shift_time;
+plot(time / 1000, r_squared_adjusted)
+xlabel('Shift in s')
+ylabel('R squared adjusted')
