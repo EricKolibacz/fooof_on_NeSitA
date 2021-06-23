@@ -4,6 +4,7 @@ max_shift = max_shift_time/step_size;
 linear_models = struct;
 
 for shift = -max_shift:1:max_shift
+    disp(shift)
     T_shift = table();
     for block_name_i = relevant_blocks_idx
         block_name = block_names{block_name_i};
@@ -15,6 +16,7 @@ for shift = -max_shift:1:max_shift
         T_shift.Properties.VariableNames{['offsets' num2str(i_channel)]} = ['c' num2str(channels(i_channel)) '_offset'];
         T_shift.Properties.VariableNames{['exponents' num2str(i_channel)]} = ['c' num2str(channels(i_channel)) '_exponent'];
     end
+    T_shift.performance = log(2 - T_shift.performance);
     linear_models.(strrep(['shift' num2str(shift)], '-', 'negative')) = fitlm(T_shift);
 end
 
