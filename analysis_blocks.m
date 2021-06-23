@@ -2,7 +2,7 @@
 parent_folder = '/home/eric/Documents/Uni/Master Human Factors/Thesis/Code/data/';
 window_size = 60000;
 step_size = 1000;
-max_shift_time = 30000; % longest time reasonable for shifting when computing cross correlation
+max_shift_time = 45000; % longest time reasonable for shifting when computing cross correlation
 
 %% Reading data
 persons=get_files(parent_folder, 'just_folders', true);
