@@ -59,5 +59,29 @@ figure(4);
 clf;
 plot_block(block_results.dist_pred_permanent_2, channels, step_size, window_size, 'exponent', 'performance')
 
+
+%% Plotting regression results
+figure(5);
+clf;
+
+linear_models_cell = struct2cell(linear_models);
+r_squared_adjusted = nan(length(linear_models_cell),1);
+rmses = nan(length(linear_models_cell),1);
+for linear_model_i = 1:length(linear_models_cell)
+    r_squared_adjusted(linear_model_i,1) = linear_models_cell{linear_model_i}.model.Rsquared.Adjusted; % alternative '.MSE'
+    rmses(linear_model_i,1) = linear_models_cell{linear_model_i}.rmse;
+end
+time = -max_shift_time:step_size:max_shift_time;
+
+title(['VS: ' person])
+
+hold on
+yyaxis left
+plot(time / 1000, r_squared_adjusted)
+xlabel('Shift in sec')
+ylabel('R squared adjusted')
+yyaxis right
+plot(time / 1000, rmses)
+ylabel('Root mean squared errors by cross-validation')
 %% Plotting window information
 fooof_plot(block_results.indist_pred_permanent_2.window_107.channel_89)
