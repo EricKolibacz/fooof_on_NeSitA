@@ -1,7 +1,7 @@
 %% Parameters
 channels = [85, 87, 89, 90];
 parent_folder = '/home/eric/Documents/Uni/Master Human Factors/Thesis/Code/data/';
-file_name = 'all'; % optional; recommended for high number of channels
+channel_name = 'all'; % optional; recommended for high number of channels
 %% Which person
 persons=get_files(parent_folder, 'just_folders', true);
 [indx,tf] = listdlg('PromptString',{'Select a person.',...
@@ -25,8 +25,9 @@ eeg_blocks = split_in_blocks(EEG, channels);
 extracted_data.eeg_blocks = eeg_blocks;
 extracted_data.srate = EEG.srate(1);
 extracted_data.channels = channels;
-if strcmp(file_name,'')
-    file_name = ['extracted_data_channels_' strjoin(arrayfun(@num2str, channels, 'Uniform', false),'_') '.mat'];
+if strcmp(channel_name,'')
+    channel_name = [strjoin(arrayfun(@num2str, channels, 'Uniform', false),'_') '.mat'];
 end
+file_name = ['extracted_data_channels_' channel_name];
 save([filepath file_name],'-struct', 'extracted_data')
 disp('Done extracting ...')
