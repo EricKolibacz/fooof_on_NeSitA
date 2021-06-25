@@ -73,7 +73,7 @@ for linear_model_i = 1:length(linear_models_cell)
 end
 time = -max_shift_time:step_size:max_shift_time;
 
-title(['VS: ' person])
+title(['VP: ' person])
 
 hold on
 yyaxis left
