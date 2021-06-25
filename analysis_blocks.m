@@ -1,8 +1,8 @@
 %% Parameters
 parent_folder = '/home/eric/Documents/Uni/Master Human Factors/Thesis/Code/data/';
 window_size = 60000;
-step_size = 1000;
-max_shift_time = 45000; % longest time reasonable for shifting when computing cross correlation
+step_size = 2000;
+max_shift_time = 44000; % longest time reasonable for shifting when computing cross correlation
 
 %% Reading data
 persons=get_files(parent_folder, 'just_folders', true);
@@ -50,7 +50,7 @@ channels = extracted_data.channels;
 tic
 clear block_results;
 data_folders=get_files([parent_folder person], 'just_folders', true);
-data_folder = data_folders(contains(data_folders,strjoin(arrayfun(@num2str, channels, 'Uniform', false),'_')));
+data_folder = data_folders(contains(data_folders,strjoin(data_file_splitted(3:end),'_')));
 if ~isempty(data_folder)
     data_subfolders=get_files([parent_folder person '/' data_folder{1}], 'just_folder', true);
     data_subfolder = data_subfolders(contains(data_subfolders,['w' num2str(window_size) '_s' num2str(step_size)]));
@@ -87,7 +87,7 @@ ps_ap_offset = nan(length(relevant_blocks_idx), length(channels), max_shift_time
 Rs_ap_exponent = nan(length(relevant_blocks_idx), length(channels), max_shift_time/step_size*2+1);
 ps_ap_exponent = nan(length(relevant_blocks_idx), length(channels), max_shift_time/step_size*2+1);
 for block_name_i = relevant_blocks_idx
-    block_name = block_names{block_name_i};
+    block_name = block_names{block_name_i}
     if isempty(block_results.(block_name))
        continue 
     end
