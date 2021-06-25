@@ -70,7 +70,7 @@ if ~exist('block_results', 'var')
         block_result = analysis_with_fooof_and_moving_window(block_data, channels, srate, window_size, step_size);
         block_results.(block_names{block_name_i}) = block_result;
     end
-    filepath = [parent_folder person '/channels_' strjoin(arrayfun(@num2str, channels, 'Uniform', false),'_') '/' 'w' num2str(window_size) '_s' num2str(step_size)];
+    filepath = [parent_folder person '/' strjoin(data_file_splitted(3:end),'_') '/' 'w' num2str(window_size) '_s' num2str(step_size)];
     mkdir(filepath)
     save([filepath '/block_results.mat'],'-struct', 'block_results')
     save([filepath '/window_size.mat'], 'window_size')
