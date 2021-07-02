@@ -1,7 +1,7 @@
 %% Parameters
 parent_folder = '/home/eric/Documents/Uni/Master Human Factors/Thesis/Code/data/';
-window_size = 60000;
-step_size = 2000;
+window_size = 15000;
+step_size = 1000;
 max_shift_time = 44000; % longest time reasonable for shifting when computing cross correlation
 
 %% Reading data
