@@ -1,7 +1,7 @@
 %% Parameters
-channels = [85, 87, 89, 90];
+channels = [89, 88, 29, 80, 25, 99, 20, 85, 84, 27, 76, 23, 95, 18, 64, 65, 39, 60, 36, 69, 33, 112, 11, 115, 10, 113, 106, 15];
 parent_folder = '/home/eric/Documents/Uni/Master Human Factors/Thesis/Code/data/';
-channel_name = 'all'; % optional; recommended for high number of channels
+channel_name = 'PFRL_cluster'; % optional; recommended for high number of channels
 %% Which person
 persons=get_files(parent_folder, 'just_folders', true);
 [indx,tf] = listdlg('PromptString',{'Select a person.',...

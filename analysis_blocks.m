@@ -1,6 +1,6 @@
 %% Parameters
 parent_folder = '/home/eric/Documents/Uni/Master Human Factors/Thesis/Code/data/';
-window_size = 15000;
+window_size = 10000;
 step_size = 1000;
 max_shift_time = 44000; % longest time reasonable for shifting when computing cross correlation
 
@@ -33,6 +33,13 @@ else
    data_file = data_files; 
 end
 
+is_clustered = contains(data_file,'cluster');
+if is_clustered
+    cluster = {'frontal', 'parietal', 'right', 'left'};
+    amount_per_cluster = [7, 7, 7, 7];
+    disp(['A clustered data set was used. The cluster are set to "' strjoin(cluster, ' ') '" with "' num2str(amount_per_cluster) '" as amount of nodes per cluster.'])
+    disp('If you like to change this configuration change variables "cluster" and "amount_per_cluster".')
+end
 
 data_file_splitted = split(data_file{1}, '.');
 data_file_splitted = split(data_file_splitted{1},'_');
@@ -67,7 +74,11 @@ if ~exist('block_results', 'var')
 
         %moving window
         block_names{block_name_i}
-        block_result = analysis_with_fooof_and_moving_window(block_data, channels, srate, window_size, step_size);
+        if is_clustered
+            block_result = clustered_analysis_with_fooof_and_moving_window(block_data, cluster, amount_per_cluster, srate, window_size, step_size);
+        else
+            block_result = analysis_with_fooof_and_moving_window(block_data, channels, srate, window_size, step_size);
+        end
         block_results.(block_names{block_name_i}) = block_result;
     end
     filepath = [parent_folder person '/' strjoin(data_file_splitted(3:end),'_') '/' 'w' num2str(window_size) '_s' num2str(step_size)];
@@ -79,6 +90,10 @@ end
 
 toc
 %% Covariance analysis
+
+if is_clustered
+    channels = cluster;
+end
 
 mode = 'performance';
 relevant_blocks_idx = 8:23;
@@ -92,7 +107,11 @@ for block_name_i = relevant_blocks_idx
        continue 
     end
     for i_channel = 1:length(channels)
-        channel = ['channel_' num2str(channels(i_channel))];
+        if is_clustered
+            channel = ['cluster_' cluster{i_channel}];
+        else
+            channel = ['channel_' num2str(channels(i_channel))];
+        end
         all_windows_of_block = struct2cell(block_results.(block_name));
         aperiodic_parameters = vertcat(vertcat(vertcat(all_windows_of_block{:}).(channel)).aperiodic_params);
         [performance, bias] = get_performance(all_windows_of_block);
