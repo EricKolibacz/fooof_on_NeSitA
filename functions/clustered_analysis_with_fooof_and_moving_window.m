@@ -75,7 +75,7 @@ function results = clustered_analysis_with_fooof_and_moving_window(data, cluster
             % analysing eeg date via fooof
             for cluster_i = 1:length(cluster)
                 indices = [sum(amount_of_nodes_per_cluster(1:cluster_i-1))+1:sum(amount_of_nodes_per_cluster(1:cluster_i))];
-                [psd, freqs] = pwelch(eeg_data(indices, data_i:end_window)', srate, [], [], srate);
+                [psd, freqs] = pwelch(eeg_data(indices, data_i:end_window)', 2*srate, [], [], srate);
 
                 
                 psd = geomean([psd(:,1) psd],2);
