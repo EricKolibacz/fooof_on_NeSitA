@@ -93,11 +93,6 @@ end
 
 toc
 %% Covariance analysis
-
-if is_clustered
-    channels = cluster;
-end
-
 mode = 'performance';
 relevant_blocks_idx = 8:23;
 Rs_ap_offset = nan(length(relevant_blocks_idx), length(window_field_names), max_shift_time/step_size*2+1);
@@ -105,12 +100,12 @@ ps_ap_offset = nan(length(relevant_blocks_idx), length(window_field_names), max_
 Rs_ap_exponent = nan(length(relevant_blocks_idx), length(window_field_names), max_shift_time/step_size*2+1);
 ps_ap_exponent = nan(length(relevant_blocks_idx), length(window_field_names), max_shift_time/step_size*2+1);
 for block_name_i = relevant_blocks_idx
-    block_name = block_names{block_name_i}
+    block_name = block_names{block_name_i};
     if isempty(block_results.(block_name))
        continue 
     end
+    all_windows_of_block = struct2cell(block_results.(block_name));
     for window_field_name_i = 1:length(window_field_names)
-        all_windows_of_block = struct2cell(block_results.(block_name));
         field_name = (window_field_names{window_field_name_i});
         aperiodic_parameters = vertcat(vertcat(vertcat(all_windows_of_block{:}).(field_name)).aperiodic_params);
         [performance, bias] = get_performance(all_windows_of_block);
