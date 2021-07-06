@@ -15,7 +15,7 @@
 %           
 % This function is free for any kind of distribution and usage!
 % ----------------
-function T = create_table_for_lm(all_windows_of_block, channels, shift)
+function T = create_table_for_lm(all_windows_of_block, window_field_names, shift)
 
     % check if inputs are given and display the help otherwise
     % input check: if no arguments are entered, print the help and stop
@@ -32,14 +32,14 @@ function T = create_table_for_lm(all_windows_of_block, channels, shift)
     double_requirements = @(x) (isa(x, 'double')) && ~isempty(x);
         
     addRequired(p, 'all_windows_of_block', cell_requirements);
-    addRequired(p, 'channels', double_requirements);
+    addRequired(p, 'window_field_names', cell_requirements);
     addRequired(p, 'shift', double_requirements);
     
     % parse the input
-    parse(p, all_windows_of_block, channels, shift);
+    parse(p, all_windows_of_block, window_field_names, shift);
     
     all_windows_of_block = p.Results.all_windows_of_block;
-    channels = p.Results.channels;
+    window_field_names = p.Results.window_field_names;
     shift = p.Results.shift;
     
     % computation
@@ -54,13 +54,13 @@ function T = create_table_for_lm(all_windows_of_block, channels, shift)
         windows_performance = all_windows_of_block;
     end
     
-    offsets = nan(length(windows_component),length(channels));
-    exponents = nan(length(windows_component),length(channels));
-    for i_channel = 1:length(channels)
-        channel = ['channel_' num2str(channels(i_channel))];
-        parameters = vertcat(vertcat(vertcat(windows_component{:}).(channel)).aperiodic_params);
-        offsets(:,i_channel) = parameters(:,1);
-        exponents(:,i_channel) = parameters(:,2);
+    offsets = nan(length(windows_component),length(window_field_names));
+    exponents = nan(length(windows_component),length(window_field_names));
+    for i_field_name = 1:length(window_field_names)
+        field_name = (window_field_names{i_field_name});
+        parameters = vertcat(vertcat(vertcat(windows_component{:}).(field_name)).aperiodic_params);
+        offsets(:,i_field_name) = parameters(:,1);
+        exponents(:,i_field_name) = parameters(:,2);
     end
 
     performance = get_performance(windows_performance);
