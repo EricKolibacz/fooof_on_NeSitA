@@ -70,7 +70,11 @@ function T = create_table_for_lm(all_windows_of_block, window_field_names, shift
         power_spectrums = vertcat(vertcat(vertcat(windows_component{:}).(field_name)).power_spectrum);
         ap_fit = vertcat(vertcat(vertcat(windows_component{:}).(field_name)).ap_fit);
         
-        alpha_peaks(:,i_field_name) = sum(power_spectrums(:,i_weighted),2)./sum(ap_fit(:,i_weighted),2);
+        power_spectrum_weighted = sum(power_spectrums(:,i_weighted),2)/length(i_weighted);
+        ap_fit_weighted = sum(ap_fit(:,i_weighted),2)/length(i_weighted);
+        
+        
+        alpha_peaks(:,i_field_name) = power_spectrum_weighted./ap_fit_weighted;
     end
     
     performance = get_performance(windows_performance);
