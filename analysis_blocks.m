@@ -105,8 +105,8 @@ for block_name_i = relevant_blocks_idx
        continue 
     end
     all_windows_of_block = struct2cell(block_results.(block_name));
-    for window_field_name_i = 1:length(window_field_names)
-        field_name = (window_field_names{window_field_name_i});
+    for i_field_name = 1:length(window_field_names)
+        field_name = (window_field_names{i_field_name});
         aperiodic_parameters = vertcat(vertcat(vertcat(all_windows_of_block{:}).(field_name)).aperiodic_params);
         [performance, bias] = get_performance(all_windows_of_block);
         
@@ -129,11 +129,11 @@ for block_name_i = relevant_blocks_idx
         aperiodic_parameters(r_squared < median(r_squared)-1.4826 * 3 * mad(r_squared),:) = nan;
     
         [~, Rs, ps] = cross_correlation(comparison_parameter, aperiodic_parameters(:,1), max_shift_time/step_size);
-        Rs_ap_offset(block_name_i-relevant_blocks_idx(1)+1,window_field_name_i,:) = Rs;
-        ps_ap_offset(block_name_i-relevant_blocks_idx(1)+1,window_field_name_i,:) = ps;
+        Rs_ap_offset(block_name_i-relevant_blocks_idx(1)+1,i_field_name,:) = Rs;
+        ps_ap_offset(block_name_i-relevant_blocks_idx(1)+1,i_field_name,:) = ps;
         
         [ns, Rs, ps] = cross_correlation(comparison_parameter, aperiodic_parameters(:,2), max_shift_time/step_size);
-        Rs_ap_exponent(block_name_i-relevant_blocks_idx(1)+1,window_field_name_i,:) = Rs;
-        ps_ap_exponent(block_name_i-relevant_blocks_idx(1)+1,window_field_name_i,:) = ps;
+        Rs_ap_exponent(block_name_i-relevant_blocks_idx(1)+1,i_field_name,:) = Rs;
+        ps_ap_exponent(block_name_i-relevant_blocks_idx(1)+1,i_field_name,:) = ps;
     end
 end
