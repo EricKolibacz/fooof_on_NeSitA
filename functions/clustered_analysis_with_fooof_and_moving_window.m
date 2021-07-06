@@ -83,7 +83,7 @@ function results = clustered_analysis_with_fooof_and_moving_window(data, cluster
                 i_first_channel = sum(amount_of_nodes_per_cluster(1:cluster_i-1))+1;
                 i_last_channel = sum(amount_of_nodes_per_cluster(1:cluster_i));
 
-                psd_cluster = geomean(psd([i_first_channel i_first_channel:i_last_channel]),2);
+                psd_cluster = geomean(psd(:,[i_first_channel i_first_channel:i_last_channel]),2);
 
                 % FOOOF settings
                 settings = struct();  % Use defaults
