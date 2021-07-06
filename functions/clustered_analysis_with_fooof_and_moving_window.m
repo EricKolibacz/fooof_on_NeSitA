@@ -72,20 +72,21 @@ function results = clustered_analysis_with_fooof_and_moving_window(data, cluster
             end
             window = ['window_' num2str(floor(data_i/window_index_steps)+1)];
             
-            % analysing eeg date via fooof
+            % analysing eeg date via fooof                
+            [psd, freqs] = pwelch(eeg_data(:, data_i:end_window)', 2*srate, [], [], srate);
+            
             for cluster_i = 1:length(cluster)
-                indices = [sum(amount_of_nodes_per_cluster(1:cluster_i-1))+1:sum(amount_of_nodes_per_cluster(1:cluster_i))];
-                [psd, freqs] = pwelch(eeg_data(indices, data_i:end_window)', 2*srate, [], [], srate);
+                i_first_channel = sum(amount_of_nodes_per_cluster(1:cluster_i-1))+1;
+                i_last_channel = sum(amount_of_nodes_per_cluster(1:cluster_i));
 
-                
-                psd = geomean([psd(:,1) psd],2);
+                psd_cluster = geomean([psd(:,i_first_channel) psd(:,i_first_channel:i_last_channel)],2);
 
                 % FOOOF settings
                 settings = struct();  % Use defaults
                 f_range = [3, 35]; %ToDo with parameters maybe?
 
                 % Run FOOOF
-                [~,fooof_results] = evalc('fooof(freqs, psd, f_range, settings, true);');
+                [~,fooof_results] = evalc('fooof(freqs, psd_cluster, f_range, settings, true);');
                 
                 results.(window).(['cluster_' cluster{cluster_i}]) = fooof_results;
             end
