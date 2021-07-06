@@ -19,7 +19,7 @@ function T = create_table_for_lm(all_windows_of_block, channels, shift)
 
     % check if inputs are given and display the help otherwise
     % input check: if no arguments are entered, print the help and stop
-    if nargin < 2
+    if nargin < 3
         help create_table_for_lm
         return
     end
