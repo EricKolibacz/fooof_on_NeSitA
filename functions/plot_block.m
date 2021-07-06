@@ -15,7 +15,7 @@
 %           
 % This function is free for any kind of distribution and usage!
 % ----------------
-function plot_block(block, channels, step_size, window_size, varargin)
+function plot_block(block, window_field_names, step_size, window_size, varargin)
 
     % check if inputs are given and display the help otherwise
     % input check: if no arguments are entered, print the help and stop
@@ -29,21 +29,22 @@ function plot_block(block, channels, step_size, window_size, varargin)
     p.CaseSensitive = false;
     
     struct_requirements = @(x) (isa(x, 'struct')) && ~isempty(x);
+    cell_requirements = @(x) (isa(x, 'cell')) && ~isempty(x);
     double_requirements = @(x) (isa(x, 'double')) && ~isempty(x);
     string_requirements = @(x) (isa(x, 'char')) && ~isempty(x);
         
     addRequired(p, 'block', struct_requirements);
-    addRequired(p, 'channels', double_requirements);
+    addRequired(p, 'window_field_names', cell_requirements);
     addRequired(p, 'step_size', double_requirements);
     addRequired(p, 'window_size', double_requirements);
     addOptional(p, 'parameter', 'exponent', string_requirements);
     addOptional(p, 'performance_measure', 'performance', string_requirements);
     
     % parse the input
-    parse(p, block, channels, step_size, window_size, varargin{:});
+    parse(p, block, window_field_names, step_size, window_size, varargin{:});
     
     block = p.Results.block;
-    channels = p.Results.channels;
+    window_field_names = p.Results.window_field_names;
     step_size = p.Results.step_size;
     window_size = p.Results.window_size;
     parameter = p.Results.parameter;
@@ -57,11 +58,11 @@ function plot_block(block, channels, step_size, window_size, varargin)
     end
     
     % plotting
-    for i_channel = 1:length(channels)
-        channel = ['channel_' num2str(channels(i_channel))];
+    for i_field_name = 1:length(window_field_names)
+        field_name = window_field_names{i_field_name};
         all_windows_of_block = struct2cell(block);
-        aperiodic_parameters = vertcat(vertcat(vertcat(all_windows_of_block{:}).(channel)).aperiodic_params);
-        [performance, bias] = get_performance(block);
+        aperiodic_parameters = vertcat(vertcat(vertcat(all_windows_of_block{:}).(field_name)).aperiodic_params);
+        [performance, bias] = get_performance(all_windows_of_block);
         
         if strcmp(performance_measure, 'performance')
             comparison_parameter = performance;
@@ -80,7 +81,7 @@ function plot_block(block, channels, step_size, window_size, varargin)
         % aperiodic_parameters(r_squared > median(r_squared)+1.4826 * 3 * mad(r_squared),:) = nan;
         % aperiodic_parameters(r_squared < median(r_squared)-1.4826 * 3 * mad(r_squared),:) = nan;
 
-        subplot(2,2,i_channel);
+        subplot(2,2,i_field_name);
         hold on
         yyaxis left
         plot(time, aperiodic_parameters(:,parameter_idx))
@@ -90,7 +91,7 @@ function plot_block(block, channels, step_size, window_size, varargin)
         yyaxis right
         plot(time, comparison_parameter);
         ylabel(mlreportgen.utils.capitalizeFirstChar(performance_measure))
-        title(['Aperiodic ' parameter ' for channel ' num2str(channels(i_channel))])
+        title(['Aperiodic ' parameter ' for ' field_name])
         xlabel('Time in s')
         xlim([0 max(time)+window_size/1000/2])
     end
