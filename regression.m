@@ -1,6 +1,50 @@
 max_shift = max_shift_time/step_size;
+peak_alpha = 11;
+%% pre computation
+entire_block_fooof = struct();
+for block_name_i = 1:length(block_names)
+    block_data = eeg_blocks.(block_names{block_name_i});
 
-% computation
+    %moving window
+    block_names{block_name_i}
+
+    
+    for cluster_i = 1:length(cluster)
+        indices = [sum(amount_per_cluster(1:cluster_i-1))+1:sum(amount_per_cluster(1:cluster_i))];
+        [psd, freqs] = pwelch(eeg_blocks.(block_names{block_name_i}).data(indices, :)', srate, [], [], srate);
+
+
+        psd = geomean([psd(:,1) psd],2);
+
+        % FOOOF settings
+        settings = struct();  % Use defaults
+        f_range = [3, 35]; %ToDo with parameters maybe?
+
+        % Run FOOOF
+        [~,fooof_results] = evalc('fooof(freqs, psd, f_range, settings, true);');
+
+        entire_block_fooof.(block_names{block_name_i}).(['cluster_' cluster{cluster_i}]) = fooof_results;
+    end
+end
+
+%% Testing
+for block_name_i = 1:length(block_names)
+
+    peaks = vertcat(entire_block_fooof.(block_names{block_name_i}).(['cluster_' cluster{cluster_i}]).peak_params);
+    
+    peak_found = 0;
+    for peak_i = 1:size(peaks,1)
+        if peaks(peak_i,1) < 15 && peaks(peak_i,1) > 9
+           peak_found = 1;
+        end
+    end
+    if ~peak_found
+       disp("No alpha found")
+       block_names{block_name_i}
+       peaks
+    end
+end
+%% computation
 linear_models = struct;
 
 
