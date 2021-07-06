@@ -62,8 +62,8 @@ function results = clustered_analysis_with_fooof_and_moving_window(data, cluster
         error('Cluster length and amount_of_nodes_per_cluster length are not equal.')
     end
     
-    if size(data,1) ~= sum(amount_of_nodes_per_cluster)
-        error(['Total amount of nodes per cluster (here ' num2str(size(data,1)) ') must correspond to amount of channel(' num2str(size(data,1)) ').'])
+    if size(eeg_data,1) ~= sum(amount_of_nodes_per_cluster)
+        error(['Total amount of nodes per cluster (here ' num2str(size(data,1)) ') must correspond to amount of channel(' num2str(size(eeg_data,1)) ').'])
     end
     
     if size(eeg_data,2) < window_index_size
