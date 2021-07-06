@@ -79,7 +79,7 @@ sgtitle('Xcorr between aperiodic offset and performance average over blocks')
 %% Plotting aperiodic parameters
 figure(5);
 clf;
-plot_block(block_results.dist_pred_permanent_2, channels, step_size, window_size, 'exponent', 'performance')
+plot_block(block_results.dist_pred_permanent_2, window_field_names, step_size, window_size, 'exponent', 'performance')
 
 
 %% Plotting regression results
