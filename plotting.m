@@ -8,7 +8,7 @@ for block_i = relevant_blocks_idx
     title(strrep(block_names(block_i), '_', '-'))
     xlabel('Shift')
     ylabel('mean of R over Blocks')
-    legend(split(num2str(channels)))
+    legend(window_field_names)
 end
 sgtitle('Xcorr between aperiodic exponent and performance') 
 
@@ -30,7 +30,7 @@ for block_i = relevant_blocks_idx
     xlabel('Time in s')
     ylabel("Fooof's R Squared")
     xlim([0 max(time)+window_size/1000/2])
-    legend(split(num2str(channels)))
+    legend(window_field_names)
 end
 sgtitle("Fooof's R squared per window per block") 
 %% Every block Aperiodic offset
@@ -43,7 +43,7 @@ for block_i = relevant_blocks_idx
     title(strrep(block_names(block_i), '_', '-'))
     xlabel('Shift')
     ylabel('mean of R over Blocks')
-    legend(split(num2str(channels)))
+    legend(window_field_names)
 end
 sgtitle('Xcorr between aperiodic offset and performance') 
 %% Average Rs and ps
@@ -54,26 +54,26 @@ title('Aperiodic exponent')
 xlabel('Shift')
 ylabel('mean of R over Blocks')
 ylim([-1 1])
-legend(split(num2str(channels)))
+legend(window_field_names)
 subplot(2,2,3)
 plot(ns,permute(nanmean(ps_ap_exponent,1),[3,2,1]))
 title('Aperiodic exponent')
 xlabel('Shift')
 ylabel('mean of p over Blocks')
-legend(split(num2str(channels)))
+legend(window_field_names)
 subplot(2,2,2)
 plot(ns,permute(nanmean(Rs_ap_offset,1),[3,2,1]))
 title('Aperiodic offset')
 xlabel('Shift')
 ylabel('mean of R over Blocks')
 ylim([-1 1])
-legend(split(num2str(channels)))
+legend(window_field_names)
 subplot(2,2,4)
 plot(ns,permute(nanmean(ps_ap_offset,1),[3,2,1]))
 title('Aperiodic offset')
 xlabel('Shift')
 ylabel('mean of p over Blocks')
-legend(split(num2str(channels)))
+legend(window_field_names)
 
 sgtitle('Xcorr between aperiodic offset and performance average over blocks') 
 %% Plotting aperiodic parameters
