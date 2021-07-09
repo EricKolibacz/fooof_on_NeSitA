@@ -1,6 +1,6 @@
 %% Parameters
 parent_folder = '/home/eric/Documents/Uni/Master Human Factors/Thesis/Code/data/';
-window_size = 7500;
+window_size = 15000;
 step_size = 1000;
 max_shift_time = 44000; % longest time reasonable for shifting when computing cross correlation
 
@@ -10,7 +10,7 @@ persons=get_files(parent_folder, 'just_folders', true);
     'Only one can be selected at a time.',''},...
     'SelectionMode','single',...
     'ListSize',[350,300],...
-    'InitialValue', 2,...
+    'InitialValue', 30,...
     'ListString',persons);
 if tf == 0
    error('A person needs to be selected') 
