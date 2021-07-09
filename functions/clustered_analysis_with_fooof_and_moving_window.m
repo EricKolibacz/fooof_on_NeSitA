@@ -77,7 +77,7 @@ function results = clustered_analysis_with_fooof_and_moving_window(data, cluster
             window = ['window_' num2str(floor(data_i/window_index_steps)+1)];
             
             % analysing eeg date via fooof                
-            [psd, freqs] = pwelch(eeg_data(:, data_i:end_window)', 2*srate, [], [], srate);
+            [psd, freqs] = pwelch(eeg_data(:, data_i:end_window)', srate, [], [], srate);
             
             for cluster_i = 1:length(cluster)
                 i_first_channel = sum(amount_of_nodes_per_cluster(1:cluster_i-1))+1;
@@ -87,7 +87,7 @@ function results = clustered_analysis_with_fooof_and_moving_window(data, cluster
 
                 % FOOOF settings
                 settings = struct();  % Use defaults
-                f_range = [3, 35]; %ToDo with parameters maybe?
+                f_range = [2, 40]; %ToDo with parameters maybe?
 
                 % Run FOOOF
                 [~,fooof_results] = evalc('fooof(freqs, psd_cluster, f_range, settings, true);');
