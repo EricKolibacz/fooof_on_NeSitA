@@ -43,8 +43,8 @@ for shift = -max_shift:1:max_shift
     
     % Cross validation
     T_array = table2array(T_shift);
-    X = T_array(:,1:12);
-    Y = T_array(:,13);
+    X = T_array(:,1:end-1);
+    Y = T_array(:,end);
 
     % perform cross-validation, and return average MSE across folds
     mse = crossval('mse', X, Y,'Predfun',fcn,'kfold',5);
