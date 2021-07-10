@@ -74,7 +74,7 @@ function T = create_table_for_lm(all_windows_of_block, window_field_names, shift
         ap_fit_weighted = sum(ap_fit(:,i_weighted),2)/length(i_weighted);
         
         
-        alpha_peaks(:,i_field_name) = power_spectrum_weighted./ap_fit_weighted;
+        alpha_peaks(:,i_field_name) = power_spectrum_weighted-ap_fit_weighted;
     end
     
     performance = get_performance(windows_performance);
