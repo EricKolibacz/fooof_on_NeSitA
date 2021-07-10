@@ -15,7 +15,7 @@
 %           
 % This function is free for any kind of distribution and usage!
 % ----------------
-function T = create_table_for_lm(all_windows_of_block, window_field_names, shift, alpha_peak_index)
+function T = create_table_for_lm(all_windows_of_block, window_field_names, shift, alpha_peak_idxs)
 
     % check if inputs are given and display the help otherwise
     % input check: if no arguments are entered, print the help and stop
@@ -34,15 +34,15 @@ function T = create_table_for_lm(all_windows_of_block, window_field_names, shift
     addRequired(p, 'all_windows_of_block', cell_requirements);
     addRequired(p, 'window_field_names', cell_requirements);
     addRequired(p, 'shift', double_requirements);
-    addRequired(p, 'alpha_peak_index', double_requirements);
+    addRequired(p, 'alpha_peak_idxs', double_requirements);
     
     % parse the input
-    parse(p, all_windows_of_block, window_field_names, shift, alpha_peak_index);
+    parse(p, all_windows_of_block, window_field_names, shift, alpha_peak_idxs);
     
     all_windows_of_block = p.Results.all_windows_of_block;
     window_field_names = p.Results.window_field_names;
     shift = p.Results.shift;
-    alpha_peak_index = p.Results.alpha_peak_index;
+    alpha_peak_idxs = p.Results.alpha_peak_idxs;
     
     % computation
     if shift < 0
@@ -66,12 +66,11 @@ function T = create_table_for_lm(all_windows_of_block, window_field_names, shift
         exponents(:,i_field_name) = parameters(:,2);
         
         % alpha peak estimation
-        i_weighted = [alpha_peak_index-1 alpha_peak_index alpha_peak_index alpha_peak_index+1];
         power_spectrums = vertcat(vertcat(vertcat(windows_component{:}).(field_name)).power_spectrum);
         ap_fit = vertcat(vertcat(vertcat(windows_component{:}).(field_name)).ap_fit);
         
-        power_spectrum_weighted = sum(power_spectrums(:,i_weighted),2)/length(i_weighted);
-        ap_fit_weighted = sum(ap_fit(:,i_weighted),2)/length(i_weighted);
+        power_spectrum_weighted = sum(power_spectrums(:,alpha_peak_idxs),2)/length(alpha_peak_idxs);
+        ap_fit_weighted = sum(ap_fit(:,alpha_peak_idxs),2)/length(alpha_peak_idxs);
         
         
         alpha_peaks(:,i_field_name) = power_spectrum_weighted-ap_fit_weighted;

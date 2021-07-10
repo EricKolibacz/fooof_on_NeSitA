@@ -1,10 +1,14 @@
 max_shift = max_shift_time/step_size;
-alpha_peak = 11;
+alpha_peak_range = [10 13];
 
 % get clostest frequ to peak_alpha
 freqs = block_results.(block_names{relevant_blocks_idx(1)}).window_1.(window_field_names{1}).freqs;
-[~,alpha_peak_index] = min(abs(alpha_peak - freqs));
-freqs(alpha_peak_index);
+[~,alpha_peak_index_low] = min(abs(alpha_peak_range(1) - freqs));
+freqs(alpha_peak_index_low);
+[~,alpha_peak_index_high] = min(abs(alpha_peak_range(2) - freqs));
+freqs(alpha_peak_index_high);
+
+alpha_peak_range_idx = [alpha_peak_index_low:alpha_peak_index_high];
 
 
 %% computation
@@ -23,7 +27,7 @@ for shift = -max_shift:1:max_shift
     for block_name_i = relevant_blocks_idx
         data = block_names{block_name_i};
         all_windows_of_block = struct2cell(block_results.(data));
-        T_block = create_table_for_lm(all_windows_of_block, window_field_names, shift, alpha_peak_index);
+        T_block = create_table_for_lm(all_windows_of_block, window_field_names, shift, alpha_peak_range_idx);
         T_shift = [T_shift;T_block];
     end
     for i_window_field_names = 1:length(window_field_names)
