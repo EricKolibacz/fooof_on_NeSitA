@@ -3,7 +3,7 @@ channels = [89, 88, 29, 80, 25, 99, 20, 85, 84, 27, 76, 23, 95, 18, 64, 65, 39, 
 channel_name = 'PFRL_cluster'; % optional; recommended for high number of channels
 data_folder = '/media/eric/External/Daten/Data4Pan/Data4Pan';
 parent_folder = '/home/eric/Documents/Uni/Master Human Factors/Thesis/Code/data/';
-persons = {'s1', 's2'};
+persons = {'s2', 's3'};
 window_sizes = [15000,10000,7500];
 step_sizes = [1000];
 
@@ -43,6 +43,9 @@ for person_i=1:length(persons)
         file_name = ['extracted_data_channels_' channel_name];
         save([parent_folder '/' person '/' file_name],'-struct', 'extracted_data')
         disp('Done extracting ...')
+
+        just_files = get_files([parent_folder person], 'just_files', true);
+        data_files=just_files(contains(just_files, 'extracted_data'))'; 
     end
     % read data
     if length(data_files) > 1
@@ -90,12 +93,12 @@ for person_i=1:length(persons)
 
             clear block_results;
             data_folders=get_files([parent_folder person], 'just_folders', true);
-            data_folder = data_folders(contains(data_folders,strjoin(data_file_splitted(3:end),'_')));
-            if ~isempty(data_folder)
-                data_subfolders=get_files([parent_folder person '/' data_folder{1}], 'just_folder', true);
+            data_folder1 = data_folders(contains(data_folders,strjoin(data_file_splitted(3:end),'_')));
+            if ~isempty(data_folder1)
+                data_subfolders=get_files([parent_folder person '/' data_folder1{1}], 'just_folder', true);
                 data_subfolder = data_subfolders(contains(data_subfolders,['w' num2str(window_size) '_s' num2str(step_size)]));
                 if ~isempty(data_subfolder)
-                    block_results = load([parent_folder person '/' data_folder{1} '/' data_subfolder{1} '/block_results.mat']);
+                    block_results = load([parent_folder person '/' data_folder1{1} '/' data_subfolder{1} '/block_results.mat']);
                 end
             end
             block_names = fieldnames(eeg_blocks);
