@@ -13,6 +13,7 @@ alpha_peak_range_idx = [alpha_peak_index_low:alpha_peak_index_high];
 
 %% computation
 linear_models = struct;
+Ts = struct;
 
 
 % Cross validation
@@ -49,4 +50,5 @@ for shift = -max_shift:1:max_shift
     % perform cross-validation, and return average MSE across folds
     mse = crossval('mse', X, Y,'Predfun',fcn,'kfold',5);
     linear_models.(strrep(['shift' num2str(shift)], '-', 'negative')).rmse = sqrt(mse); 
+    T.(strrep(['shift' num2str(shift)], '-', 'negative')) = T_shift;
 end
