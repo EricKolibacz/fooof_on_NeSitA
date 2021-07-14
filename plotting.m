@@ -79,7 +79,7 @@ sgtitle('Xcorr between aperiodic offset and performance average over blocks')
 %% Plotting aperiodic parameters
 figure(5);
 clf;
-plot_block(block_results.dist_pred_permanent_2, window_field_names, step_size, window_size, 'exponent', 'performance')
+plot_block(block_results.dist_unpred_fixation_2, window_field_names, step_size, window_size, 'exponent', 'performance')
 
 
 %% Plotting regression results
@@ -95,7 +95,7 @@ for linear_model_i = 1:length(linear_models_cell)
 end
 time = -max_shift_time:step_size:max_shift_time;
 
-title(['VP: ' person])
+title(['VP: ' person ', Window:' num2str(window_size/1000) 's, clustered:' num2str(is_clustered)])
 
 hold on
 yyaxis left
@@ -106,4 +106,20 @@ yyaxis right
 plot(time / 1000, rmses)
 ylabel('Root mean squared errors by cross-validation')
 %% Plotting window information
-fooof_plot(block_results.indist_pred_permanent_2.window_107.channel_89)
+figure(7);
+clf;
+[~, idx] = min(rmses);
+shift_to_use = idx - max_shift - 1;
+shift_reference = (strrep(['shift' num2str(shift_to_use)], '-', 'negative'));
+
+title(['VP: ' person ', Window:' num2str(window_size/1000) 's, clustered:' num2str(is_clustered)])
+hold on
+plot(2-exp(predict(linear_models.(shift_reference).model,T.(shift_reference))), 'DisplayName', 'Predicted Performance')
+plot(2-exp(T.(shift_reference).performance), 'DisplayName', 'Actual performance')
+ylim([0 1.1])
+ylabel('Performance in %')
+xlabel('Blocks')
+legend show
+
+%% Plotting window information
+fooof_plot(block_results.dist_pred_fixation_1.window_1.cluster_parietal)
