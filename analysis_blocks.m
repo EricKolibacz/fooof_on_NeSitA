@@ -3,6 +3,7 @@ parent_folder = '/home/eric/Documents/Uni/Master Human Factors/Thesis/Code/data/
 window_size = 15000;
 step_size = 1000;
 max_shift_time = 44000; % longest time reasonable for shifting when computing cross correlation
+relevant_blocks_idx = [8:9 16:21]; %8:23 for all experimental blocks, [8:9 16:21] just low-pwerformance blocks
 
 %% Reading data
 persons=get_files(parent_folder, 'just_folders', true);
@@ -94,7 +95,6 @@ end
 toc
 %% Covariance analysis
 mode = 'performance';
-relevant_blocks_idx = 8:23;
 Rs_ap_offset = nan(length(relevant_blocks_idx), length(window_field_names), max_shift_time/step_size*2+1);
 ps_ap_offset = nan(length(relevant_blocks_idx), length(window_field_names), max_shift_time/step_size*2+1);
 Rs_ap_exponent = nan(length(relevant_blocks_idx), length(window_field_names), max_shift_time/step_size*2+1);
