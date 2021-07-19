@@ -1,6 +1,9 @@
 max_shift = max_shift_time/step_size;
 alpha_peak_range = [10 13];
+relevant_blocks = ['duf', 'ipf', 'iup', 'iuf']; % ['dpp', 'dpf', 'dup', 'duf', 'ipp', 'ipf', 'iup', 'iuf']
 
+
+%% precomputation
 % get clostest frequ to peak_alpha
 freqs = block_results.(block_names{relevant_blocks_idx(1)}).window_1.(window_field_names{1}).freqs;
 [~,alpha_peak_index_low] = min(abs(alpha_peak_range(1) - freqs));
@@ -26,10 +29,14 @@ for shift = -max_shift:1:max_shift
     disp(shift)
     T_shift = table();
     for block_name_i = relevant_blocks_idx
-        data = block_names{block_name_i};
-        all_windows_of_block = struct2cell(block_results.(data));
-        T_block = create_table_for_lm(all_windows_of_block, window_field_names, shift, alpha_peak_range_idx);
-        T_shift = [T_shift;T_block];
+        block_name = block_names{block_name_i};
+        block_name_parts = split(block_name, '_');
+        first_letters = cellfun(@(x) x(1), block_name_parts);
+        if contains(relevant_blocks, first_letters(1:3)')
+            all_windows_of_block = struct2cell(block_results.(block_name));
+            T_block = create_table_for_lm(all_windows_of_block, window_field_names, shift, alpha_peak_range_idx);
+            T_shift = [T_shift;T_block];
+        end
     end
     for i_window_field_names = 1:length(window_field_names)
         field_name_splitted = split(window_field_names{i_window_field_names},'_');

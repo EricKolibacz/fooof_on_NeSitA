@@ -1,9 +1,9 @@
 %% Parameters
 parent_folder = '/home/eric/Documents/Uni/Master Human Factors/Thesis/Code/data/';
-window_size = 15000;
+window_size = 10000;
 step_size = 1000;
 max_shift_time = 44000; % longest time reasonable for shifting when computing cross correlation
-relevant_blocks_idx = [8:9 16:21]; %8:23 for all experimental blocks, [8:9 16:21] just low-pwerformance blocks
+relevant_blocks_idx = 8:23;
 
 %% Reading data
 persons=get_files(parent_folder, 'just_folders', true);
