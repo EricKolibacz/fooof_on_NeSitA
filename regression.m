@@ -1,6 +1,7 @@
 max_shift = max_shift_time/step_size;
 alpha_peak_range = [10 13];
-relevant_blocks = ['duf', 'ipf', 'iup', 'iuf']; % ['dpp', 'dpf', 'dup', 'duf', 'ipp', 'ipf', 'iup', 'iuf']
+% relevant_blocks = ['dpp', 'dpf', 'dup', 'duf', 'ipp', 'ipf', 'iup', 'iuf']; % all blokcs
+relevant_blocks = ['duf', 'ipf', 'iup', 'iuf']; % just low performance
 
 
 %% precomputation
