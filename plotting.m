@@ -1,14 +1,21 @@
+%% General parameter
+time = -max_shift_time:step_size:max_shift_time;
+time = time/1000;
+
 %% Every block Aperiodic exponent
 figure(1);
 clf;
+Last = @(L) L{end};
 for block_i = relevant_blocks_idx
     subplot(4,4,block_i-relevant_blocks_idx(1)+1)
-    plot(ns,permute(Rs_ap_exponent(block_i-relevant_blocks_idx(1)+1, :, :), [2,3,1]))
+    plot(time,permute(Rs_ap_exponent(block_i-relevant_blocks_idx(1)+1, :, :), [2,3,1]))
     ylim([-1 1])
     title(strrep(block_names(block_i), '_', '-'))
-    xlabel('Shift')
-    ylabel('mean of R over Blocks')
-    legend(window_field_names)
+    xlabel('Shift in s')
+    ylabel('Mean of R')
+    if block_i-relevant_blocks_idx(1)+1 == 1
+        legend(cellfun(@(x) Last(split(x, '_')), window_field_names, 'UniformOutput', false), 'FontSize',7, 'Location','best')
+    end
 end
 sgtitle('Xcorr between aperiodic exponent and performance') 
 
@@ -20,7 +27,7 @@ for block_i = relevant_blocks_idx
     
     block_name = block_names{block_i};
     all_windows_of_block = struct2cell(block_results.(block_name));
-    r_squared = vertcat(vertcat(vertcat(all_windows_of_block{:}).(channel)).r_squared);
+    r_squared = vertcat(vertcat(vertcat(all_windows_of_block{:}).(field_name)).r_squared);
     
     time = 0:size(all_windows_of_block,1)-1;
     time = time' * step_size/1000 + window_size/1000/2;
@@ -49,31 +56,28 @@ sgtitle('Xcorr between aperiodic offset and performance')
 %% Average Rs and ps
 figure(4);
 subplot(2,2,1)
-plot(ns,permute(nanmean(Rs_ap_exponent,1),[3,2,1]))
+plot(time,permute(nanmean(Rs_ap_exponent,1),[3,2,1]))
 title('Aperiodic exponent')
-xlabel('Shift')
-ylabel('mean of R over Blocks')
+xlabel('Shift in s')
+ylabel('Mean of R over Blocks')
 ylim([-1 1])
-legend(window_field_names)
+legend(cellfun(@(x) Last(split(x, '_')), window_field_names, 'UniformOutput', false), 'Location','best')
 subplot(2,2,3)
-plot(ns,permute(nanmean(ps_ap_exponent,1),[3,2,1]))
+plot(time,permute(nanmean(ps_ap_exponent,1),[3,2,1]))
 title('Aperiodic exponent')
-xlabel('Shift')
-ylabel('mean of p over Blocks')
-legend(window_field_names)
+xlabel('Shift in s')
+ylabel('Mean of p over Blocks')
 subplot(2,2,2)
-plot(ns,permute(nanmean(Rs_ap_offset,1),[3,2,1]))
+plot(time,permute(nanmean(Rs_ap_offset,1),[3,2,1]))
 title('Aperiodic offset')
-xlabel('Shift')
-ylabel('mean of R over Blocks')
+xlabel('Shift in s')
+ylabel('Mean of R over Blocks')
 ylim([-1 1])
-legend(window_field_names)
 subplot(2,2,4)
-plot(ns,permute(nanmean(ps_ap_offset,1),[3,2,1]))
+plot(time,permute(nanmean(ps_ap_offset,1),[3,2,1]))
 title('Aperiodic offset')
-xlabel('Shift')
-ylabel('mean of p over Blocks')
-legend(window_field_names)
+xlabel('Shift in s')
+ylabel('Mean of p over Blocks')
 
 sgtitle('Xcorr between aperiodic offset and performance average over blocks') 
 %% Plotting aperiodic parameters
@@ -101,7 +105,7 @@ hold on
 yyaxis left
 plot(time / 1000, r_squared_adjusted)
 xlabel('Shift in sec')
-ylabel('R squared adjusted')
+ylabel('R squared adjusted (on full data)')
 yyaxis right
 plot(time / 1000, rmses)
 ylabel('Root mean squared errors by cross-validation')
@@ -117,6 +121,7 @@ hold on
 plot(2-exp(predict(linear_models.(shift_reference).model,T.(shift_reference))), 'DisplayName', 'Predicted Performance')
 plot(2-exp(T.(shift_reference).performance), 'DisplayName', 'Actual performance')
 ylim([0 1.1])
+xlim([0 size(T.(shift_reference),1)])
 ylabel('Performance in %')
 xlabel('Blocks')
 legend show
