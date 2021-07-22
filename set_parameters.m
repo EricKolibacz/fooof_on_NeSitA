@@ -6,3 +6,5 @@ window_size = 10000;
 step_size = 1000;
 max_shift_time = 60000; % longest time reasonable for shifting when computing cross correlation
 relevant_blocks_idx = 8:23;
+% relevant_blocks = ['dpp', 'dpf', 'dup', 'duf', 'ipp', 'ipf', 'iup', 'iuf']; % all blokcs
+relevant_blocks = ['duf', 'ipf', 'iup', 'iuf']; % just low performance

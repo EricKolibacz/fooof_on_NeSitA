@@ -1,9 +1,5 @@
 max_shift = max_shift_time/step_size;
 alpha_peak_range = [10 13];
-% relevant_blocks = ['dpp', 'dpf', 'dup', 'duf', 'ipp', 'ipf', 'iup', 'iuf']; % all blokcs
-relevant_blocks = ['duf', 'ipf', 'iup', 'iuf']; % just low performance
-
-
 %% precomputation
 % get clostest frequ to peak_alpha
 freqs = block_results.(block_names{relevant_blocks_idx(1)}).window_1.(window_field_names{1}).freqs;
@@ -60,5 +56,7 @@ for shift = -max_shift:1:max_shift
     T.(strrep(['shift' num2str(shift)], '-', 'negative')) = T_shift;
 end
 
+data_subfolders=get_files([parent_folder person '/' data_folder{1}], 'just_folder', true);
+data_subfolder = data_subfolders(contains(data_subfolders,['w' num2str(window_size) '_s' num2str(step_size)]));
 save([parent_folder person '/' data_folder{1} '/' data_subfolder{1} '/linear_models.mat'], 'linear_models')
 save([parent_folder person '/' data_folder{1} '/' data_subfolder{1} '/T.mat'], 'T')
