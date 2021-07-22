@@ -41,6 +41,9 @@ for shift = -max_shift:1:max_shift
         T_shift.Properties.VariableNames{['alpha_peaks' num2str(i_window_field_names)]} = [field_name_splitted{2} '_alpha_peak'];
     end
     T_shift.performance = log(2 - T_shift.performance);
+    for column_i=1:length(T_shift.Properties.VariableNames)-1
+       T_shift.(T_shift.Properties.VariableNames{column_i}) = zscore(T_shift.(T_shift.Properties.VariableNames{column_i})); 
+    end
     
     % Regression on full data
     linear_models.(strrep(['shift' num2str(shift)], '-', 'negative')).model = fitlm(T_shift);
