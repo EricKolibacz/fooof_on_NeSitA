@@ -27,7 +27,6 @@ Ts = struct;
 fcn = @(XTRAIN,YTRAIN,XTEST) predict(fitlm(XTRAIN,YTRAIN), XTEST);
 
 for shift = -max_shift:1:max_shift
-    disp(shift)
     T_shift = table();
     for block_name_i = relevant_blocks_idx
         block_name = block_names{block_name_i};
@@ -60,3 +59,6 @@ for shift = -max_shift:1:max_shift
     linear_models.(strrep(['shift' num2str(shift)], '-', 'negative')).rmse = sqrt(mse); 
     T.(strrep(['shift' num2str(shift)], '-', 'negative')) = T_shift;
 end
+
+save([parent_folder person '/' data_folder{1} '/' data_subfolder{1} '/linear_models.mat'], 'linear_models')
+save([parent_folder person '/' data_folder{1} '/' data_subfolder{1} '/T.mat'], 'T')
