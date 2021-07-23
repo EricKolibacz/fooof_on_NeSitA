@@ -9,5 +9,5 @@ eeg_blocks = split_in_blocks(EEG, channels);
 extracted_data.eeg_blocks = eeg_blocks;
 extracted_data.srate = EEG.srate(1);
 extracted_data.channels = channels;
-save([parent_folder '/' person '/' data_folder],'-struct', 'extracted_data')
+save([parent_folder '/' person '/extracted_data_' data_folder],'-struct', 'extracted_data')
 disp('Done extracting ...')
