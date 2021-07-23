@@ -57,7 +57,7 @@ for shift = -max_shift:1:max_shift
     T.(strrep(['shift' num2str(shift)], '-', 'negative')) = T_shift;
 end
 
-data_subfolders=get_files([parent_folder person '/' data_folder{1}], 'just_folder', true);
+data_subfolders=get_files([parent_folder person '/' data_folder], 'just_folder', true);
 data_subfolder = data_subfolders(contains(data_subfolders,['w' num2str(window_size) '_s' num2str(step_size)]));
-save([parent_folder person '/' data_folder{1} '/' data_subfolder{1} '/linear_models.mat'], 'linear_models')
-save([parent_folder person '/' data_folder{1} '/' data_subfolder{1} '/T.mat'], 'T')
+save([parent_folder person '/' data_folder '/' data_subfolder '/linear_models.mat'], 'linear_models')
+save([parent_folder person '/' data_folder '/' data_subfolder '/T.mat'], 'T')

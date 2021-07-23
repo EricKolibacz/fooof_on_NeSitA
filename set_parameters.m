@@ -16,4 +16,4 @@ if strcmp(channel_name,'')
     channel_name = [strjoin(arrayfun(@num2str, channels, 'Uniform', false),'_') '.mat'];
 end
 data_folder = ['extracted_data_channels_' channel_name];
-data_subfolder = {['/' 'w' num2str(window_size) '_s' num2str(step_size)]};
+data_subfolder = ['/' 'w' num2str(window_size) '_s' num2str(step_size)];
