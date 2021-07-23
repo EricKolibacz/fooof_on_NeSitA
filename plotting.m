@@ -1,4 +1,4 @@
-%% General parameter
+le%% General parameter
 time = -max_shift_time:step_size:max_shift_time;
 time = time/1000;
 
@@ -87,44 +87,149 @@ plot_block(block_results.dist_unpred_fixation_2, window_field_names, step_size, 
 
 
 %% Plotting regression results
+persons = {'s1', 's2', 's3', 's4', 's6', 's7'};
+data_subfolders=get_files([parent_folder persons{1} '/' data_folder], 'just_folder', true);
+data_subfolder = data_subfolders{contains(data_subfolders,['w' num2str(window_size) '_s' num2str(step_size)])};
+
+
+% use standard color map defined by Marius Klug
+load('customized_colormap.mat')
+colormap(myCmap)
+
+time = -max_shift_time:step_size:max_shift_time;
+r_squared_adjusted = nan(length(persons),2*max_shift+1);
+performance = nan(length(persons),2*max_shift+1);
+rmses = nan(length(persons),2*max_shift+1);
+significance = zeros(3*4+1,2*max_shift+1);
+estimate = zeros(3*4+1,2*max_shift+1);
+for person_i=1:length(persons)
+    person = persons{person_i};
+    variable = load([parent_folder '/' person '/' data_folder '/' data_subfolder '/linear_models.mat']);
+    variable2 = load([parent_folder '/' person '/' data_folder '/' data_subfolder '/T.mat']);
+    linear_models_cell = struct2cell(variable.linear_models);
+    T_cell = struct2cell(variable2.T);
+    for linear_model_i = 1:length(linear_models_cell)
+        r_squared_adjusted(person_i, linear_model_i) = linear_models_cell{linear_model_i}.model.Rsquared.Adjusted; % alternative '.MSE'
+        rmses(person_i, linear_model_i) = linear_models_cell{linear_model_i}.rmse;
+        performance(person_i, linear_model_i) = std(2-exp(T_cell{linear_model_i}.performance));
+        significance(:, linear_model_i) = significance(:, linear_model_i) + double(linear_models_cell{linear_model_i}.model.Coefficients.pValue < 0.5);
+        estimate(:, linear_model_i) = estimate(:, linear_model_i) + linear_models_cell{linear_model_i}.model.Coefficients.Estimate;
+    end
+end
+estimate = estimate/length(persons);
+%% One example plot
 figure(6);
 clf;
-
-linear_models_cell = struct2cell(linear_models);
-r_squared_adjusted = nan(length(linear_models_cell),1);
-rmses = nan(length(linear_models_cell),1);
-for linear_model_i = 1:length(linear_models_cell)
-    r_squared_adjusted(linear_model_i,1) = linear_models_cell{linear_model_i}.model.Rsquared.Adjusted; % alternative '.MSE'
-    rmses(linear_model_i,1) = linear_models_cell{linear_model_i}.rmse;
-end
-time = -max_shift_time:step_size:max_shift_time;
-
-title(['VP: ' person ', Window:' num2str(window_size/1000) 's, clustered:' num2str(is_clustered)])
-
+p_idx = 1;
+title(['VP: ' persons{p_idx} ', Window:' num2str(window_size/1000) 's'])
 hold on
 yyaxis left
-plot(time / 1000, r_squared_adjusted)
+plot(time / 1000, r_squared_adjusted(p_idx,:))
 xlabel('Shift in sec')
 ylabel('R squared adjusted (on full data)')
 yyaxis right
-plot(time / 1000, rmses)
+plot(time / 1000, rmses(p_idx,:))
 ylabel('Root mean squared errors by cross-validation')
-%% Plotting window information
+%% Plotting example performance prediction
 figure(7);
 clf;
-[~, idx] = min(rmses);
+[~, idx] = min(rmses(p_idx,:));
 shift_to_use = idx - max_shift - 1;
 shift_reference = (strrep(['shift' num2str(shift_to_use)], '-', 'negative'));
-
-title(['VP: ' person ', Window:' num2str(window_size/1000) 's, clustered:' num2str(is_clustered)])
+variable = load([parent_folder '/' persons{p_idx} '/' data_folder '/' data_subfolder '/linear_models.mat']);
+variable2 = load([parent_folder '/' persons{p_idx} '/' data_folder '/' data_subfolder '/T.mat']);
+title(['VP: ' person ', Window:' num2str(window_size/1000) 's'])
 hold on
-plot(2-exp(predict(linear_models.(shift_reference).model,T.(shift_reference))), 'DisplayName', 'Predicted Performance')
-plot(2-exp(T.(shift_reference).performance), 'DisplayName', 'Actual performance')
+plot(2-exp(predict(variable.linear_models.(shift_reference).model,variable2.T.(shift_reference))), 'DisplayName', 'Predicted Performance')
+plot(2-exp(variable2.T.(shift_reference).performance), 'DisplayName', 'Actual performance')
 ylim([0 1.1])
-xlim([0 size(T.(shift_reference),1)])
+xlim([0 size(variable2.T.(shift_reference),1)])
 ylabel('Performance in %')
 xlabel('Blocks')
 legend show
 
+%% Plotting multiple regression results
+figure(8);
+clf;
+
+for person_i=1:length(persons)
+    subplot(2,3, person_i)
+    person = persons{person_i};
+    title(['VP: ' person ', Window size:' num2str(window_size/1000) 's'])
+
+    hold on
+    yyaxis left
+    plot(time / 1000, r_squared_adjusted(person_i,:))
+    ylim([0 0.3])
+    xlabel('Shift in sec')
+    ylabel('R squared adjusted (on full data)')
+    yyaxis right
+    plot(time / 1000, rmses(person_i, :))
+    ylim([0.06 0.14])
+    ylabel('Root mean squared errors by cross-validation')
+end
+%% Plotting multiple regression results normalized
+figure(8);
+clf;
+for person_i=1:length(persons)
+    subplot(2,3, person_i)
+    person = persons{person_i};
+    title(['VP: ' person ', Window size:' num2str(window_size/1000) 's'])
+
+    hold on
+    yyaxis left
+    plot(time / 1000, r_squared_adjusted(person_i,:))
+    ylim([0 0.3])
+    xlabel('Shift in sec')
+    ylabel('R squared adjusted (on full data)')
+    yyaxis right
+    plot(time / 1000, rmses(person_i, :)./performance(person_i,:))
+    ylim([0.6 0.9])
+    ylabel('RSME normalized by cross-validation')
+end
+
+%% Plotting mean regression results
+figure(9);
+clf;
+
+title(['Mean, Window size:' num2str(window_size/1000) 's'])
+
+hold on
+yyaxis left
+plot(time / 1000, mean(r_squared_adjusted,1))
+ylim([0.00 0.2])
+xlabel('Shift in sec')
+ylabel('R squared adjusted (on full data)')
+yyaxis right
+plot(time / 1000, mean(rmses,1))
+ylim([0.06 0.14])
+ylabel('Root mean squared errors by cross-validation')
+
+%% Plotting 2D-significant parameter/shift plot 
+figure(10);
+clf;
+
+title(['2D-shift/parameter Estimate plot, Window size:' num2str(window_size/1000) 's'])
+h = heatmap(significance(2:end,:), 'Colormap', myCmap);
+h.ColorLimits = [0 length(persons)];
+ylabel('Parameters')
+xlabel('Shift in s')
+ax = gca;
+ax.XData = arrayfun(@(x) num2str(x), time/1000, 'UniformOutput', false);
+names = variable.linear_models.shift0.model.CoefficientNames;
+ax.YData = strrep(names(2:end), '_', '-');
+%% Plotting 2D-Estimate parameter/shift plot 
+figure(11);
+clf;
+
+title(['2D-shift/parameter Estimate plot, Window size:' num2str(window_size/1000) 's'])
+h = heatmap(estimate(2:end,:), 'Colormap', myCmap);
+h.ColorLimits = [-max(max(abs(estimate(2:end,:)))) max(max(abs(estimate(2:end,:))))];
+ylabel('Parameters')
+xlabel('Shift in s')
+ax = gca;
+ax.XData = arrayfun(@(x) num2str(x), time/1000, 'UniformOutput', false);
+names = variable.linear_models.shift0.model.CoefficientNames;
+ax.YData = strrep(names(2:end), '_', '-');
 %% Plotting window information
 fooof_plot(block_results.dist_pred_fixation_1.window_1.cluster_parietal)
