@@ -9,9 +9,5 @@ eeg_blocks = split_in_blocks(EEG, channels);
 extracted_data.eeg_blocks = eeg_blocks;
 extracted_data.srate = EEG.srate(1);
 extracted_data.channels = channels;
-if strcmp(channel_name,'')
-    channel_name = [strjoin(arrayfun(@num2str, channels, 'Uniform', false),'_') '.mat'];
-end
-file_name = ['extracted_data_channels_' channel_name];
-save([parent_folder '/' person '/' file_name],'-struct', 'extracted_data')
+save([parent_folder '/' person '/' data_folder],'-struct', 'extracted_data')
 disp('Done extracting ...')

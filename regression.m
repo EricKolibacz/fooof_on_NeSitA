@@ -1,5 +1,3 @@
-max_shift = max_shift_time/step_size;
-alpha_peak_range = [10 13];
 %% precomputation
 % get clostest frequ to peak_alpha
 freqs = block_results.(block_names{relevant_blocks_idx(1)}).window_1.(window_field_names{1}).freqs;

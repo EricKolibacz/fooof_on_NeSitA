@@ -6,5 +6,14 @@ window_size = 10000;
 step_size = 1000;
 max_shift_time = 60000; % longest time reasonable for shifting when computing cross correlation
 relevant_blocks_idx = 8:23;
+% regression parameters
+alpha_peak_range = [10 13];
 % relevant_blocks = ['dpp', 'dpf', 'dup', 'duf', 'ipp', 'ipf', 'iup', 'iuf']; % all blokcs
 relevant_blocks = ['duf', 'ipf', 'iup', 'iuf']; % just low performance
+%% Automatically generated
+max_shift = max_shift_time/step_size;
+if strcmp(channel_name,'')
+    channel_name = [strjoin(arrayfun(@num2str, channels, 'Uniform', false),'_') '.mat'];
+end
+data_folder = ['extracted_data_channels_' channel_name];
+data_subfolder = {['/' 'w' num2str(window_size) '_s' num2str(step_size)]};
