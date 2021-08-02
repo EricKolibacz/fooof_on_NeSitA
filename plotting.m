@@ -1,5 +1,6 @@
 %% General parameter
 persons = {'s1', 's2', 's3', 's4', 's6', 's7'};
+persons = {'s1', 's2', 's3', 's4', 's5', 's6', 's7', 's8', 's9', 's10', 's11', 's12', 's13', 's14', 's15', 's16', 's17', 's18', 's19', 's20', 's22', 's23', 's24', 's25', 's26', 's27', 's28', 's29', 's30', 's31', 's32'};
 data_subfolders=get_files([parent_folder persons{1} '/' data_folder], 'just_folder', true);
 data_subfolder = data_subfolders{contains(data_subfolders,['w' num2str(window_size) '_s' num2str(step_size)])};
 
@@ -14,6 +15,8 @@ performance = nan(length(persons),2*max_shift+1);
 rmses = nan(length(persons),2*max_shift+1);
 significance = zeros(3*4+1,2*max_shift+1);
 estimate = zeros(3*4+1,2*max_shift+1);
+std_help = nan(length(persons),2*max_shift+1);
+std_help2 = nan(length(persons),2*max_shift+1);
 for person_i=1:length(persons)
     person = persons{person_i};
     variable = load([parent_folder '/' person '/' data_folder '/' data_subfolder '/linear_models.mat']);
@@ -24,8 +27,10 @@ for person_i=1:length(persons)
         r_squared_adjusted(person_i, linear_model_i) = linear_models_cell{linear_model_i}.model.Rsquared.Adjusted; % alternative '.MSE'
         rmses(person_i, linear_model_i) = linear_models_cell{linear_model_i}.rmse;
         performance(person_i, linear_model_i) = std(2-exp(T_cell{linear_model_i}.performance));
-        significance(:, linear_model_i) = significance(:, linear_model_i) + double(linear_models_cell{linear_model_i}.model.Coefficients.pValue < 0.5);
+        significance(:, linear_model_i) = significance(:, linear_model_i) + double(linear_models_cell{linear_model_i}.model.Coefficients.pValue < 0.05);
         estimate(:, linear_model_i) = estimate(:, linear_model_i) + linear_models_cell{linear_model_i}.model.Coefficients.Estimate;
+        std_help(person_i,linear_model_i) = std(T_cell{linear_model_i}.performance);
+        std_help2(person_i,linear_model_i) = std(2-exp(T_cell{linear_model_i}.performance));
     end
 end
 estimate = estimate/length(persons);
@@ -195,12 +200,12 @@ title(['Mean, Window size:' num2str(window_size/1000) 's'])
 hold on
 yyaxis left
 plot(time / 1000, mean(r_squared_adjusted,1))
-ylim([0.00 0.2])
+%ylim([0.00 0.2])
 xlabel('Shift in sec')
 ylabel('R squared adjusted (on full data)')
 yyaxis right
 plot(time / 1000, mean(rmses,1))
-ylim([0.06 0.14])
+%ylim([0.06 0.14])
 ylabel('Root mean squared errors by cross-validation')
 
 %% Plotting 2D-significant parameter/shift plot 
@@ -208,7 +213,7 @@ figure(10);
 clf;
 
 title(['2D-shift/parameter Estimate plot, Window size:' num2str(window_size/1000) 's'])
-h = heatmap(significance(2:end,:), 'Colormap', myCmap);
+h = heatmap(significance(2:end,:), 'Colormap', autumn);
 h.ColorLimits = [0 length(persons)];
 ylabel('Parameters')
 xlabel('Shift in s')
