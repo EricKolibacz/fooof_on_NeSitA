@@ -54,7 +54,13 @@ function eeg_blocks = split_in_blocks(EEG, varargin)
     if length(idx_startevents) ~= length(idx_stopevents)
         disp(['Number of Start Events:  ' num2str(length(idx_startevents))])
         disp(['Number of Stop Events:  ' num2str(length(idx_stopevents))])
-        error('The amount of starts and ends of blocks are not equal. Something is wrong with the dataset.')
+        warning('The amount of starts and ends of blocks are not equal. Something is wrong with the dataset.')
+        warning('The last index of the dataset will be added to the shorter index list and we hope everything works out well ...')
+        if length(idx_startevents) < length(idx_stopevents)
+            idx_startevents = [idx_startevents; size(allevents,1)];
+        else
+            idx_stopevents = [idx_stopevents; size(allevents,1)];
+        end
     end
     
     % check if each stop is before the next start
