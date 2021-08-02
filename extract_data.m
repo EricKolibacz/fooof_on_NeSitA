@@ -1,5 +1,5 @@
 %% Extracting
-filepath = [data_folder '/' person '/'];
+filepath = [datafiles_folder '/' person '/'];
 [ALLEEG, ~, ~, ALLCOM] = eeglab;
 EEG = pop_loadset('filename',[person '_cleaned_with_ICA.set'],'filepath', filepath);
 [ALLEEG, EEG, ~] = eeg_store( ALLEEG, EEG, 0 );

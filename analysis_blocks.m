@@ -61,8 +61,7 @@ channels = extracted_data.channels;
 tic
 clear block_results;
 data_folders=get_files([parent_folder person], 'just_folders', true);
-data_folder = [data_folders{contains(data_folders,strjoin(data_file_splitted(3:end),'_'))}];
-if ~isempty(data_folder)
+if ~isempty(data_folders)
     data_subfolders=get_files([parent_folder person '/' data_folder], 'just_folder', true);
     data_subfolder = [data_subfolders{contains(data_subfolders,['w' num2str(window_size) '_s' num2str(step_size)])}];
     if ~isempty(data_subfolder)
