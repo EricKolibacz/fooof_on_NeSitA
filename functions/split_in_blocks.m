@@ -52,8 +52,8 @@ function eeg_blocks = split_in_blocks(EEG, varargin)
     blocks = {EEG.event(idx_startevents).block}';
     
     if length(idx_startevents) ~= length(idx_stopevents)
-        disp(['Number of Start Events:  ' length(idx_startevents)])
-        disp(['Number of Stop Events:  ' length(idx_stopevents)])
+        disp(['Number of Start Events:  ' num2str(length(idx_startevents))])
+        disp(['Number of Stop Events:  ' num2str(length(idx_stopevents))])
         error('The amount of starts and ends of blocks are not equal. Something is wrong with the dataset.')
     end
     
