@@ -1,6 +1,6 @@
 %% General parameter
-persons = {'s1', 's2', 's3', 's4', 's6', 's7'};
-persons = {'s1', 's2', 's3', 's4', 's5', 's6', 's7', 's8', 's9', 's10', 's11', 's12', 's13', 's14', 's15', 's16', 's17', 's18', 's19', 's20', 's22', 's23', 's24', 's25', 's26', 's27', 's28', 's29', 's30', 's31', 's32'};
+window_size = 15000;
+persons = {'s1', 's2', 's3', 's4', 's5', 's6', 's7', 's8', 's9', 's10', 's11', 's12', 's13', 's14', 's15', 's16', 's17', 's18', 's19', 's20', 's21', 's22', 's23', 's24', 's25', 's26', 's27', 's28', 's29', 's30', 's31', 's32'};
 data_subfolders=get_files([parent_folder persons{1} '/' data_folder], 'just_folder', true);
 data_subfolder = data_subfolders{contains(data_subfolders,['w' num2str(window_size) '_s' num2str(step_size)])};
 
@@ -41,7 +41,7 @@ clf;
 Last = @(L) L{end};
 for block_i = relevant_blocks_idx
     subplot(4,4,block_i-relevant_blocks_idx(1)+1)
-    plot(time,permute(Rs_ap_exponent(block_i-relevant_blocks_idx(1)+1, :, :), [2,3,1]))
+    plot(time/1000,permute(Rs_ap_exponent(block_i-relevant_blocks_idx(1)+1, :, :), [2,3,1]))
     ylim([-1 1])
     title(strrep(block_names(block_i), '_', '-'))
     xlabel('Shift in s')
@@ -78,39 +78,32 @@ figure(3);
 clf;
 for block_i = relevant_blocks_idx
     subplot(4,4,block_i-relevant_blocks_idx(1)+1)
-    plot(ns,permute(Rs_ap_offset(block_i-relevant_blocks_idx(1)+1, :, :), [2,3,1]))
+    plot(time/1000,permute(Rs_ap_offset(block_i-relevant_blocks_idx(1)+1, :, :), [2,3,1]))
     ylim([-1 1])
     title(strrep(block_names(block_i), '_', '-'))
     xlabel('Shift')
     ylabel('mean of R over Blocks')
-    legend(window_field_names)
+    if block_i-relevant_blocks_idx(1)+1 == 1
+        legend(cellfun(@(x) Last(split(x, '_')), window_field_names, 'UniformOutput', false), 'FontSize',7, 'Location','best')
+    end
 end
 sgtitle('Xcorr between aperiodic offset and performance') 
+
 %% Average Rs and ps
 figure(4);
-subplot(2,2,1)
-plot(time,permute(nanmean(Rs_ap_exponent,1),[3,2,1]))
+subplot(1,2,1)
+plot(time/1000,permute(nanmean(Rs_ap_exponent,1),[3,2,1]))
 title('Aperiodic exponent')
 xlabel('Shift in s')
 ylabel('Mean of R over Blocks')
 ylim([-1 1])
 legend(cellfun(@(x) Last(split(x, '_')), window_field_names, 'UniformOutput', false), 'Location','best')
-subplot(2,2,3)
-plot(time,permute(nanmean(ps_ap_exponent,1),[3,2,1]))
-title('Aperiodic exponent')
-xlabel('Shift in s')
-ylabel('Mean of p over Blocks')
-subplot(2,2,2)
-plot(time,permute(nanmean(Rs_ap_offset,1),[3,2,1]))
+subplot(1,2,2)
+plot(time/1000,permute(nanmean(Rs_ap_offset,1),[3,2,1]))
 title('Aperiodic offset')
 xlabel('Shift in s')
 ylabel('Mean of R over Blocks')
 ylim([-1 1])
-subplot(2,2,4)
-plot(time,permute(nanmean(ps_ap_offset,1),[3,2,1]))
-title('Aperiodic offset')
-xlabel('Shift in s')
-ylabel('Mean of p over Blocks')
 
 sgtitle('Xcorr between aperiodic offset and performance average over blocks') 
 %% Plotting aperiodic parameters
@@ -205,8 +198,41 @@ xlabel('Shift in sec')
 ylabel('R squared adjusted (on full data)')
 yyaxis right
 plot(time / 1000, mean(rmses,1))
-%ylim([0.06 0.14])
+%ylim([0.06 0.14])%ylim([0.06 0.14])
+
 ylabel('Root mean squared errors by cross-validation')
+%% Plotting mean regression results with error bar
+figure(9);
+clf;
+hold on
+rmses_column = reshape(rmses(:,41:81),[],1);
+time2 = repmat(-20:20,32, 1);
+time_column = reshape(time2,[],1);
+[means,pred,grp] = grpstats(rmses_column,time_column,{'mean','predci','gname'},'Alpha',0.05);
+
+ngrps = length(grp); % Number of groups
+errorbar((1:ngrps)',means,pred(:,2)-means)
+xlim([0.5 ngrps + 0.5])
+ylim([0 0.12])
+set(gca,'xtick',1:ngrps,'xticklabel',grp)
+ylabel('Root mean squared errors by cross-validation')
+title(['95% Prediction Intervals for RMSE by Shift with Window ' num2str(window_size/1000) 's'])
+%% Plotting mean regression results with error bar
+figure(9);
+clf;
+hold on
+r_squared_adjusted_column = reshape(r_squared_adjusted(:,41:81),[],1);
+time2 = repmat(-20:20,32, 1);
+time_column = reshape(time2,[],1);
+[means,pred,grp] = grpstats(r_squared_adjusted_column,time_column,{'mean','predci','gname'},'Alpha',0.05);
+
+ngrps = length(grp); % Number of groups
+errorbar((1:ngrps)',means,pred(:,2)-means)
+xlim([0.5 ngrps + 0.5])
+ylim([0 1])
+set(gca,'xtick',1:ngrps,'xticklabel',grp)
+ylabel('R squared adjusted by cross-validation')
+title(['95% Prediction Intervals for R sqaured adjusted by Shift with Window ' num2str(window_size/1000) 's'])
 
 %% Plotting 2D-significant parameter/shift plot 
 figure(10);
