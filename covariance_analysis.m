@@ -1,4 +1,5 @@
 %% Covariance analysis
+analysis_blocks
 mode = 'performance';
 Rs_ap_offset = nan(length(relevant_blocks_idx), length(window_field_names), max_shift_time/step_size*2+1);
 ps_ap_offset = nan(length(relevant_blocks_idx), length(window_field_names), max_shift_time/step_size*2+1);
