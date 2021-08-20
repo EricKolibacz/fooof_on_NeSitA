@@ -1,5 +1,5 @@
 %% General parameter
-windows_to_compare = [7500, 10000, 15000];
+windows_to_compare = [5000, 7500, 10000, 15000];
 persons = {'s1', 's2', 's3', 's4', 's5', 's6', 's7', 's8', 's9', 's10', 's11', 's12', 's13', 's14', 's15', 's16', 's17', 's18', 's19', 's20', 's21', 's22', 's23', 's24', 's25', 's26', 's27', 's28', 's29', 's30', 's31', 's32'};
 
 
@@ -29,8 +29,6 @@ for window_i=1:length(windows_to_compare)
             means(window_i, person_i, linear_model_i) = mean(2-exp(T_cell{linear_model_i}.performance));
         end
     end
-    estimate = estimate/length(persons);
-    
 end
 %%
 figure(20);
@@ -51,5 +49,5 @@ mean_rmses = permute(nanmean(rmses, 2), [1,3,2]);
 mean_stds = permute(nanmean(stds, 2), [1,3,2]);
 mean_means = permute(nanmean(means, 2), [1,3,2]);
 
-[mean_means(:,61), mean_stds(:,61), mean_stds_log(:,61), mean_rmses(:,61)]'
+[mean_means(:,max_shift+1), mean_stds(:,max_shift+1), mean_stds_log(:,max_shift+1), mean_rmses(:,max_shift+1), mean_rmses(:,max_shift+1)./mean_stds_log(:,max_shift+1)]
 
