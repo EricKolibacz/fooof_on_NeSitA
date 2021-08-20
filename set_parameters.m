@@ -4,12 +4,13 @@ channel_name = 'PFRL_cluster'; % optional; recommended for high number of channe
 parent_folder = '/home/eric/Documents/Uni/Master Human Factors/Thesis/Code/data/';
 window_size = 10000;
 step_size = 1000;
-max_shift_time = 60000; % longest time reasonable for shifting when computing cross correlation
+max_shift_time = 15000; % longest time reasonable for shifting when computing cross correlation
 relevant_blocks_idx = 8:23;
 % regression parameters
-alpha_peak_range = [10 13];
+alpha_peak_range = [8 10];
 % relevant_blocks = ['dpp', 'dpf', 'dup', 'duf', 'ipp', 'ipf', 'iup', 'iuf']; % all blokcs
 relevant_blocks = ['duf', 'ipf', 'iup', 'iuf']; % just low performance
+person = '';
 %% Automatically generated
 max_shift = max_shift_time/step_size;
 if strcmp(channel_name,'')
