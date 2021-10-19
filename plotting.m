@@ -157,15 +157,14 @@ time2 = repmat(-max_shift:max_shift,32, 1);
 time_column = reshape(time2,[],1);
 [means,pred,grp] = grpstats(rmses_column,time_column,{'mean','predci','gname'},'Alpha',0.05);
 
-%errorbar(time/1000,means,pred(:,2)-means, 'LineWidth', 2)
 s = shadedErrorBar(time/1000,means,pred(:,2)-means);
- set(s.edge,'LineWidth',2,'LineStyle',':')
- s.mainLine.LineWidth = 2;
- s.patch.FaceColor = [0.8500, 0.3250, 0.0980];
- s.patch.EdgeColor = [0.8500, 0.3250, 0.0980];
- s.patch.MarkerEdgeColor = [0.8500, 0.3250, 0.0980];
- s.patch.MarkerFaceColor = [0.8500, 0.3250, 0.0980];
- s.mainLine.Color = [0.8500, 0.3250, 0.0980];
+set(s.edge,'LineWidth',2,'LineStyle',':')
+s.mainLine.LineWidth = 2;
+s.patch.FaceColor = [0.8500, 0.3250, 0.0980];
+s.patch.EdgeColor = [0.8500, 0.3250, 0.0980];
+s.patch.MarkerEdgeColor = [0.8500, 0.3250, 0.0980];
+s.patch.MarkerFaceColor = [0.8500, 0.3250, 0.0980];
+s.mainLine.Color = [0.8500, 0.3250, 0.0980];
 sd_rv_color = [0.55 0 0];
 
 plot(time/1000,means, 'Color' ,[0.8500, 0.3250, 0.0980], 'LineWidth', 2, 'LineStyle', '-');
@@ -184,14 +183,12 @@ time2 = repmat(-max_shift:max_shift,32, 1);
 time_column = reshape(time2,[],1);
 [means,pred,grp] = grpstats(r_squared_adjusted_column,time_column,{'mean','predci','gname'},'Alpha',0.05);
 
-%errorbar(time/1000,means,pred(:,2)-means, 'LineWidth', 2)
 s = shadedErrorBar(time/1000,means,pred(:,2)-means); 
- set(s.edge,'LineWidth',2,'LineStyle',':')
- s.mainLine.LineWidth = 2;
- s.patch.FaceColor = [0, 0.4470, 0.7410];
- s.patch.EdgeColor = [0, 0.4470, 0.7410];
- s.mainLine.Color = [0, 0.4470, 0.7410];
- %uistack(s.mainLine, 'top')
+set(s.edge,'LineWidth',2,'LineStyle',':')
+s.mainLine.LineWidth = 2;
+s.patch.FaceColor = [0, 0.4470, 0.7410];
+s.patch.EdgeColor = [0, 0.4470, 0.7410];
+s.mainLine.Color = [0, 0.4470, 0.7410];
 xlim([time(1)/1000 time(end)/1000])
 ylim([0 1])
 ylabel('R^2_{adjusted}')
