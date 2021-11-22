@@ -37,6 +37,8 @@ end
 estimate = estimate/length(persons);
 
 window_comparison
+mean_stds_log = permute(nanmean(stds_log, 2), [1,3,2]);
+
 covariance_analysis
 
 
@@ -87,20 +89,31 @@ clf;
 hold on
 parameters = {Rs_ap_exponent, Rs_ap_offset, Rs_alpha};
 parameter_names = {'Exponent', 'Offset', 'Alpha Peak Power'};
+line_colour = [0, 0.4470, 0.7410];
 for parameter_i=1:length(parameters)
     parameter = parameters{parameter_i};
     parameter_name = parameter_names{parameter_i};
     for cluster_i=1:size(parameter,2)
 
         subplot(3,4,cluster_i+(parameter_i-1)*4)
+        hold on
         Rs_column = reshape(parameter(:,cluster_i,:),[],1);
         time2 = repmat(-max_shift:max_shift,size(parameter,1), 1);
         time_column = reshape(time2,[],1);
         [means,pred,grp] = grpstats(Rs_column,time_column,{'mean','predci','gname'},'Alpha',0.05);
 
-        errorbar(time/1000,means,pred(:,2)-means, 'LineWidth', 2)
+        s = shadedErrorBar(time/1000,means,pred(:,2)-means);%, 'LineWidth', 2)
+        set(s.edge,'LineWidth',2,'LineStyle',':')
+        s.mainLine.LineWidth = 2;
+        s.patch.FaceColor = line_colour;
+        s.patch.EdgeColor = line_colour;
+        s.patch.MarkerEdgeColor = line_colour;
+        s.patch.MarkerFaceColor = line_colour;
+        s.mainLine.Color = line_colour;
+        plot(time/1000,means, 'Color' ,line_colour, 'LineWidth', 2, 'LineStyle', '-');
         xlim([time(1)/1000 time(end)/1000])
         ylim([-1 1])
+        
 
         
         if cluster_i == 1
@@ -169,7 +182,7 @@ sd_rv_color = [0.55 0 0];
 
 plot(time/1000,means, 'Color' ,[0.8500, 0.3250, 0.0980], 'LineWidth', 2, 'LineStyle', '-');
 plot(time'/1000,mean_stds_log(3,:)', 'LineStyle', '-', 'Color', sd_rv_color, 'LineWidth', 2, 'DisplayName', 'SD Response Variable', 'Marker', 'none')
-text(time(end)/1000-(time(end)/1000-time(1)/1000)/7,mean(mean_stds_log(3,:))+0.05*0.135,{'Standard Deviation','Response Variable'}, 'FontSize', 16, 'FontWeight', 'bold', 'Color', sd_rv_color, 'HorizontalAlignment' ,'center')
+text(time(end)/1000-(time(end)/1000-time(1)/1000)/7,mean(mean_stds_log(3,:))+0.05*0.135,{'Standard Deviation','Response Variable'}, 'FontSize', 20, 'FontWeight', 'bold', 'Color', sd_rv_color, 'HorizontalAlignment' ,'center')
 xlim([time(1)/1000 time(end)/1000])
 ylim([0 0.135])
 ylabel('RMSE')
@@ -194,6 +207,45 @@ ylim([0 1])
 ylabel('R^2_{adjusted}')
 xlabel('Shift in s')
 plot(time/1000,means, 'Color' ,[0, 0.4470, 0.7410], 'LineWidth', 2, 'LineStyle', '-');
+
+%%
+save_plot
+%% Plotting mean RRSE
+figure(10);
+set(gcf,'Name', 'RRSE', 'DefaultAxesFontSize',22);
+clf;
+
+
+
+hold on
+stds_log_w10 = permute(stds_log(3,:,:), [2,3,1]);
+%mean_rmses = permute(nanmean(rmses_w, 2), [1,3,2]);
+%rmses_column = reshape(rmses./stds_log_w10,[],1);
+%time2 = repmat(-max_shift:max_shift,32, 1);
+%time_column = reshape(time2,[],1);
+%[means,pred,grp] = grpstats(rmses_column,time_column,{'mean','predci','gname'},'Alpha',0.05);
+
+%s = shadedErrorBar(time/1000,means,pred(:,2)-means);
+%set(s.edge,'LineWidth',2,'LineStyle',':')
+% s.mainLine.LineWidth = 2;
+% s.patch.FaceColor = [0.8500, 0.3250, 0.0980];
+% s.patch.EdgeColor = [0.8500, 0.3250, 0.0980];
+% s.patch.MarkerEdgeColor = [0.8500, 0.3250, 0.0980];
+% s.patch.MarkerFaceColor = [0.8500, 0.3250, 0.0980];
+% s.mainLine.Color = [0.8500, 0.3250, 0.0980];
+% sd_rv_color = [0.55 0 0];
+for s_i=1:size(rmses,1)
+    plot(time/1000,rmses(s_i,:)./stds_log_w10(s_i,:), 'LineWidth', 2, 'LineStyle', '-', 'DisplayName', ['s' num2str(s_i)]);
+end
+% plot(time/1000,means, 'Color' ,[0.8500, 0.3250, 0.0980], 'LineWidth', 2, 'LineStyle', '-');
+% plot(time'/1000,mean_stds_log(3,:)', 'LineStyle', '-', 'Color', sd_rv_color, 'LineWidth', 2, 'DisplayName', 'SD Response Variable', 'Marker', 'none')
+% text(time(end)/1000-(time(end)/1000-time(1)/1000)/7,mean(mean_stds_log(3,:))+0.05*0.135,{'Standard Deviation','Response Variable'}, 'FontSize', 16, 'FontWeight', 'bold', 'Color', sd_rv_color, 'HorizontalAlignment' ,'center')
+xlim([time(1)/1000 time(end)/1000])
+ylim([0 1.5])
+ylabel('RRSE')
+xlabel('Shift in s')
+%legend('NumColumns', 4, 'Location', 'southeast')
+
 
 %%
 save_plot
@@ -256,7 +308,7 @@ xlim([0 100])
 l = legend(['$$(1-\exp(' num2str(delta_y_1) ')) (2-\hat{y}_1) )$$'], ['$$(1-\exp(' num2str(delta_y_2) ')) (2-\hat{y}_1) )$$']);
 
 set(l, 'Interpreter','latex')
-ylabel('Change in Performance in %')
+ylabel('Change in Performance in Percentage Points')
 xlabel('Performance in %')
 %%
 save_plot
